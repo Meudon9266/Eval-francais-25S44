@@ -1,0 +1,253 @@
+[
+  {
+    "consigne": "Identifie les attributs du sujet",
+    "phrase": [
+      {
+        "mot": "Mes",
+        "fonction": ""
+      },
+      {
+        "mot": "sœurs",
+        "fonction": ""
+      },
+      {
+        "mot": "ne",
+        "fonction": ""
+      },
+      {
+        "mot": "sont",
+        "fonction": ""
+      },
+      {
+        "mot": "jamais",
+        "fonction": ""
+      },
+      {
+        "mot": "malades",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Les",
+        "fonction": ""
+      },
+      {
+        "mot": "fillettes",
+        "fonction": ""
+      },
+      {
+        "mot": "restent",
+        "fonction": ""
+      },
+      {
+        "mot": "silencieuses",
+        "fonction": "AS"
+      },
+      {
+        "mot": "dans",
+        "fonction": ""
+      },
+      {
+        "mot": "la",
+        "fonction": ""
+      },
+      {
+        "mot": "salle",
+        "fonction": ""
+      },
+      {
+        "mot": "d’attente",
+        "fonction": ""
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "Identifie les attributs du sujet",
+    "phrase": [
+      {
+        "mot": "De",
+        "fonction": ""
+      },
+      {
+        "mot": "loin",
+        "fonction": ""
+      },
+      {
+        "mot": ",",
+        "fonction": ""
+      },
+      {
+        "mot": "les",
+        "fonction": ""
+      },
+      {
+        "mot": "tours",
+        "fonction": ""
+      },
+      {
+        "mot": "paraissent",
+        "fonction": ""
+      },
+      {
+        "mot": "bien",
+        "fonction": "AS"
+      },
+      {
+        "mot": "petites",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Notre",
+        "fonction": ""
+      },
+      {
+        "mot": "petite",
+        "fonction": ""
+      },
+      {
+        "mot": "chatte",
+        "fonction": ""
+      },
+      {
+        "mot": "devient",
+        "fonction": ""
+      },
+      {
+        "mot": "intrépide",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "Identifie les attributs du sujet, lorsqu'il y en a.",
+    "phrase": [
+      {
+        "mot": "Elle",
+        "fonction": ""
+      },
+      {
+        "mot": "lavait",
+        "fonction": ""
+      },
+      {
+        "mot": "les",
+        "fonction": ""
+      },
+      {
+        "mot": "vitres",
+        "fonction": ""
+      },
+      {
+        "mot": "quand",
+        "fonction": ""
+      },
+      {
+        "mot": "elle",
+        "fonction": ""
+      },
+      {
+        "mot": "tomba",
+        "fonction": ""
+      },
+      {
+        "mot": "de",
+        "fonction": ""
+      },
+      {
+        "mot": "l’escabeau",
+        "fonction": ""
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "En",
+        "fonction": ""
+      },
+      {
+        "mot": "buvant",
+        "fonction": ""
+      },
+      {
+        "mot": "beaucoup",
+        "fonction": ""
+      },
+      {
+        "mot": "d’eau",
+        "fonction": ""
+      },
+      {
+        "mot": ",",
+        "fonction": ""
+      },
+      {
+        "mot": "tu",
+        "fonction": ""
+      },
+      {
+        "mot": "resteras",
+        "fonction": ""
+      },
+      {
+        "mot": "en",
+        "fonction": "AS"
+      },
+      {
+        "mot": "bonne",
+        "fonction": "AS"
+      },
+      {
+        "mot": "santé",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Ces",
+        "fonction": ""
+      },
+      {
+        "mot": "dames",
+        "fonction": ""
+      },
+      {
+        "mot": "ont",
+        "fonction": ""
+      },
+      {
+        "mot": "l’air",
+        "fonction": ""
+      },
+      {
+        "mot": "très",
+        "fonction": "AS"
+      },
+      {
+        "mot": "sympathiques",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  }
+]

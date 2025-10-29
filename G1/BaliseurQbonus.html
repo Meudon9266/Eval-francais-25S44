@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Baliseur multipage – S • CVD • CVI • CP • AS</title>
+<style>
+  :root{
+    --S:#CFF7D1; --CVD:#FDE9B8; --CVI:#FCD7D2; --CP:#D6ECFE; --AS:#EBDDFF;
+    --B:#e5e7eb; --txt:#1f2937; --bg:#f7f7fb; --CN:#EAD1C4; 
+  }
+  body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:var(--bg);color:var(--txt)}
+  .wrap{max-width:1200px;margin:24px auto;padding:0 14px}
+  h1{font-size:1.2rem;margin:0 0 10px}
+  .bar, .card{background:#fff;border:1px solid var(--B);border-radius:14px}
+  .bar{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px 12px;margin-bottom:14px}
+  .btn{appearance:none;border:1px solid var(--B);background:#fff;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+  .btn:hover{background:#f3f4f6}
+  .btn.primary{background:#2563eb;color:#fff;border-color:#2563eb}
+  .btn.danger{background:#ef4444;color:#fff;border-color:#ef4444}
+  .btn.ghost{background:#fff;border-color:var(--B)}
+  .sep{height:24px;width:1px;background:var(--B);margin:0 6px}
+  .grid{display:grid;grid-template-columns:1.1fr 1fr;gap:16px}
+  .card{padding:14px;box-shadow:0 6px 16px rgba(0,0,0,.04)}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
+  label{font-weight:700}
+  textarea, input[type="text"]{width:100%;padding:10px;border:1px solid var(--B);border-radius:10px;font:inherit}
+  .work{min-height:120px;padding:10px;border:1px dashed #d1d5db;border-radius:12px;background:#fff}
+  .tok{
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:6px 10px;margin:6px 4px;border-radius:12px;
+    background:transparent;border:2px solid transparent;font-weight:800;user-select:none;
+    cursor:pointer;position:relative;transition:background-color .12s,border-color .12s,color .12s
+  }
+  .tok.sel{outline:3px dashed #60a5fa;outline-offset:2px}
+  .tok[data-state="S"]   {background:var(--S);border-color:#86efac}
+  .tok[data-state="CVD"] {background:var(--CVD);border-color:#fbbf24}
+  .tok[data-state="CVI"] {background:var(--CVI);border-color:#fda4af}
+  .tok[data-state="CP"]  {background:var(--CP); border-color:#93c5fd; color:var(--CP)} /* texte CP “invisible” */
+  .tok[data-state="AS"]  {background:var(--AS); border-color:#c4b5fd}
+  .tok[data-state="CN"]  {background:var(--CN); border-color:#b45309}
+  .tok[data-state=""]    {background:transparent;border-color:transparent}
+  .tok::after{
+    content:attr(data-state); position:absolute; right:6px; bottom:-12px;
+    font-size:.95em; font-weight:900; border-radius:4px; padding:1px 4px; pointer-events:none; opacity:.95
+  }
+  .tok[data-state=""]::after{content:""}
+  .tok[data-state="S"]::after   {background:var(--S);  color:#16a34a}
+  .tok[data-state="CVD"]::after {background:var(--CVD);color:#d97706}
+  .tok[data-state="CVI"]::after {background:var(--CVI);color:#e11d48}
+  .tok[data-state="CP"]::after  {background:var(--CP); color:#1d4ed8}
+  .tok[data-state="AS"]::after  {background:var(--AS); color:#6d28d9}
+  .tok[data-state="CN"]::after  {background:var(--CN); color:#92400e}
+
+  .consigne{font-weight:800;color:#b91c1c;font-size:1.05rem;margin:6px 0}
+  .toolbar .btn{min-width:68px}
+  .legend .sw{display:inline-block;width:14px;height:14px;border-radius:4px;margin-right:6px;vertical-align:-2px;border:1px solid var(--B)}
+  pre{white-space:pre-wrap;background:#0b1021;color:#cde2ff;padding:12px;border-radius:10px;max-height:420px;overflow:auto}
+  .small{opacity:.85}
+  .counter{font-weight:800}
+    /* === Fenêtre bonus === */
+    .modal-backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,.35);
+    display:none; align-items:center; justify-content:center; z-index:9999;
+    }
+    .modal-backdrop.show{display:flex;}
+    .modal{
+    width:min(700px,92vw); background:#fff; border-radius:12px;
+    border:1px solid #e5e7eb; box-shadow:0 20px 50px rgba(0,0,0,.25);
+    padding:16px;
+    }
+    .modal header{font-weight:800;font-size:1.1rem;margin-bottom:8px;}
+    .modal .row{margin:8px 0;}
+    .modal label{display:block;font-weight:700;margin-bottom:4px;}
+    .modal textarea,.modal input[type="text"]{
+    width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;
+    }
+    .modal .opts{display:flex;flex-direction:column;gap:8px;}
+    .opt-item{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;}
+    .opt-item input[type="checkbox"]{width:18px;height:18px;}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Baliseur multipage – S • CVD • CVI • CP • AS</h1>
+
+  <div class="bar">
+    <div class="row">
+      <button id="btnPrev" class="btn">◀</button>
+      <span class="counter">Page <span id="pageIdx">1</span>/<span id="pageCount">1</span></span>
+      <button id="btnNext" class="btn">▶</button>
+      <span class="sep"></span>
+      <button id="btnAdd" class="btn primary">➕ Ajouter page</button>
+      <button id="btnDup" class="btn">⧉ Dupliquer</button>
+      <button id="btnDel" class="btn danger">🗑 Supprimer</button>
+      <span class="sep"></span>
+      <label class="small"><input type="checkbox" id="multiTouch"/> Multi-sélection tactile</label>
+      <label class="small"><input type="checkbox" id="autosave"/> Autosauvegarde (local)</label>
+    </div>
+    <div class="row">
+      <input id="fileJson" type="file" accept=".json" style="display:none"/>
+      <button id="btnImport" class="btn">📂 Importer JSON</button>
+      <button id="btnCopy" class="btn">📋 Copier JSON</button>
+      <button id="btnBonus" class="btn">⭐ Bonus</button>
+      <button id="btnSave" class="btn">💾 Enregistrer JSON</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- Colonne gauche : édition de la page -->
+    <div class="card">
+      <div class="row">
+        <label for="consigne">Consigne</label>
+        <input id="consigne" type="text" placeholder="Ex. : Trouve le sujet et le CVD.">
+      </div>
+
+      <div class="row">
+        <label for="src">Phrase (texte brut)</label>
+        <textarea id="src" rows="3" placeholder="Tape la phrase à baliser..."></textarea>
+      </div>
+
+      <div class="row">
+        <button id="btnPrep" class="btn primary">Préparer la phrase</button>
+        <button id="btnClear" class="btn ghost">Effacer les tokens</button>
+      </div>
+
+      <div class="row legend">
+        <span><span class="sw" style="background:var(--S)"></span>S</span>
+        <span><span class="sw" style="background:var(--CVD)"></span>CVD</span>
+        <span><span class="sw" style="background:var(--CVI)"></span>CVI</span>
+        <span><span class="sw" style="background:var(--CP)"></span>CP</span>
+        <span><span class="sw" style="background:var(--AS)"></span>AS</span>
+        <span><span class="sw" style="background:var(--CN)"></span>CN</span>
+        <span class="small">• Maj/Ctrl/Flèches = plage ; Espace = désélection.</span>
+      </div>
+
+      <p class="consigne" id="consigneView">Consigne : (vide)</p>
+      <div id="work" class="work">La phrase tokenisée apparaîtra ici…</div>
+
+      <div class="toolbar row">
+        <button data-set="S"   class="btn">S</button>
+        <button data-set="CVD" class="btn">CVD</button>
+        <button data-set="CVI" class="btn">CVI</button>
+        <button data-set="CP"  class="btn">CP</button>
+        <button data-set="AS"  class="btn">AS</button>
+        <button data-set="CN"  class="btn">CN</button>
+        <button id="btnUnset"  class="btn ghost">Effacer état</button>
+        <button id="btnUnsel"  class="btn ghost">Désélectionner</button>
+      </div>
+    </div>
+
+    <!-- Colonne droite : JSON & gestion -->
+    <div class="card">
+      <div class="row">
+        <label for="fname">Nom du fichier JSON</label>
+        <input id="fname" type="text" placeholder="ExoXexoY.json">
+      </div>
+
+      <div class="row">
+        <span class="small">Le JSON ci-dessous contient <b>toutes</b> les pages.</span>
+      </div>
+
+      <div style="margin-top:8px">
+        <pre id="preview">[ ]</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const $  = (s,root=document)=>root.querySelector(s);
+  const $$ = (s,root=document)=>Array.from(root.querySelectorAll(s));
+
+  // ---- Cycle complet (baliseur) ----
+  const CYCLE = ["S","CVD","CVI","AS","CP","CN",""]; // harmonisé Exo2/Exo3
+
+  // ---- État global multipage ----
+  let pages = [ makeEmptyPage() ]; // [{consigne, phrase:[{mot,fonction}]}]
+  let idx = 0;                     // index page courante
+  let ctrl=false, shift=false, arrow=false, anchorIndex=null;
+
+  // ---- Réfs UI ----
+  const elSrc=$("#src"), elWork=$("#work"), elPrev=$("#preview"),
+        elCons=$("#consigne"), elConsView=$("#consigneView"), elFname=$("#fname"),
+        multi=$("#multiTouch"), autosave=$("#autosave"),
+        pageIdx=$("#pageIdx"), pageCount=$("#pageCount");
+
+  // Barre
+  const bPrev=$("#btnPrev"), bNext=$("#btnNext"),
+        bAdd=$("#btnAdd"), bDel=$("#btnDel"), bDup=$("#btnDup"),
+        bImport=$("#btnImport"), fJson=$("#fileJson"),
+        bCopy=$("#btnCopy"), bSave=$("#btnSave");
+
+  // Toolbar
+  const bUnset=$("#btnUnset"), bUnsel=$("#btnUnsel");
+
+  // --- Utils ---
+  function makeEmptyPage(){
+    return { consigne:"", phrase:[] };
+  }
+  function clonePage(p){ return { consigne:p.consigne, phrase:p.phrase.map(x=>({mot:x.mot, fonction:x.fonction||""})) }; }
+
+  // --- Tokenisation ---
+  function tokenize(str){
+    const parts=str.split(/(\s+|[.,;:!?()«»"'\u2026])/u).filter(x=>x!==""&&!/^\s+$/.test(x));
+    return parts.map(p=>({ mot:p, fonction:"", punct:/^[.,;:!?()«»"'\u2026]+$/.test(p) }));
+  }
+
+  // --- Rendu des tokens ---
+  function renderTokens(tokens){
+    elWork.innerHTML="";
+    const frag=document.createDocumentFragment();
+    tokens.forEach((t,i)=>{
+      const span=document.createElement("span");
+      span.className="tok"+(t.punct?" punct":"");
+      span.textContent=t.mot;
+      span.dataset.idx=i;
+      span.dataset.state=t.fonction||"";
+      span.addEventListener("click",e=>onClickToken(e,span));
+      frag.appendChild(span);
+    });
+    elWork.appendChild(frag);
+  }
+
+  // --- Lire tokens depuis DOM vers data ---
+  function readTokensFromDom(){
+    return $$(".tok",elWork).map(el=>({ mot: el.textContent, fonction: el.dataset.state || "" }));
+  }
+
+  // --- Appliquer la page courante vers l’UI ---
+  function loadPageToUI(){
+    const p = pages[idx];
+    elCons.value = p.consigne || "";
+    elConsView.textContent = "Consigne : " + (p.consigne||"(vide)");
+    renderTokens(p.phrase || []);
+    pageIdx.textContent = String(idx+1);
+    pageCount.textContent = String(pages.length);
+    anchorIndex=null;
+    updatePreview();
+    maybeAutosave();
+  }
+
+  // --- Sauver l’UI vers la page courante ---
+  function saveUIToPage(){
+    const p = pages[idx];
+    p.consigne = elCons.value.trim();
+    p.phrase   = readTokensFromDom();
+    elConsView.textContent = "Consigne : " + (p.consigne||"(vide)");
+    updatePreview();
+    maybeAutosave();
+  }
+
+  // --- Aperçu JSON global ---
+  function updatePreview(){
+    elPrev.textContent = JSON.stringify(pages, null, 2);
+  }
+
+  // --- Autosave localStorage ---
+  const LS_KEY = "BaliseurMultipage_autosave";
+  function maybeAutosave(){
+    if(autosave && autosave.checked){
+      localStorage.setItem(LS_KEY, JSON.stringify({ pages, idx }));
+    }
+  }
+  // Charger autosave si dispo
+  (function tryLoadAutosave(){
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      if(raw){
+        const obj = JSON.parse(raw);
+        if(obj && Array.isArray(obj.pages) && obj.pages.length){
+          pages = obj.pages; idx = Math.min(obj.idx||0, pages.length-1);
+        }
+      }
+    }catch(e){ /* ignore */ }
+  })();
+
+  // --- Sélection helpers ---
+  function clearSelection(){ $$(".tok.sel",elWork).forEach(el=>el.classList.remove("sel")); }
+  function selectionExists(){ return $$(".tok.sel",elWork).length>0; }
+  function selectRange(a,b){
+    const min=Math.min(a,b), max=Math.max(a,b);
+    clearSelection();
+    for(let k=min;k<=max;k++){
+      const t=$(`.tok[data-idx="${k}"]`,elWork);
+      if(t) t.classList.add("sel");
+    }
+  }
+  function setSelectionState(state){ $$(".tok.sel",elWork).forEach(el=> el.dataset.state=state); saveUIToPage(); }
+  function cycleOne(el){
+    const cur=el.dataset.state||"", pos=CYCLE.indexOf(cur);
+    el.dataset.state = CYCLE[(pos+1)%CYCLE.length];
+  }
+  function cycleSelectionOnce(){ $$(".tok.sel",elWork).forEach(cycleOne); saveUIToPage(); }
+
+  // --- Clic sur token (comportement harmonisé) ---
+  function onClickToken(e, el){
+    const i = parseInt(el.dataset.idx,10);
+    const mt = (multi && multi.checked) || false;
+    const isModifier = (e.ctrlKey||ctrl) || (e.shiftKey||shift) || arrow || mt;
+
+    if(isModifier){
+      // Sélection en plage inclusive, pas de cycle
+      if(anchorIndex===null){
+        anchorIndex = i;
+        clearSelection();
+        el.classList.add("sel");
+        el.dataset.state = "S"; // état initial
+      }else{
+        selectRange(anchorIndex, i);
+        setSelectionState("S");
+      }
+      saveUIToPage();
+      return;
+    }
+
+    // Clic normal
+    if(selectionExists()){
+      if(el.classList.contains("sel")){
+        // clic dans le groupe → cycle tout le groupe
+        cycleSelectionOnce();
+      }else{
+        // clic hors du groupe → désélection + nouvelle sélection en S
+        clearSelection();
+        el.classList.add("sel");
+        el.dataset.state = "S";
+        anchorIndex = i;
+        saveUIToPage();
+      }
+    }else{
+      // aucune sélection → sélectionne ce mot seul en S
+      el.classList.add("sel");
+      el.dataset.state = "S";
+      anchorIndex = i;
+      saveUIToPage();
+    }
+  }
+
+  // --- Clavier global ---
+      document.addEventListener("keydown", e => {
+      if (e.key === "Control") ctrl = true;
+      if (e.key === "Shift") shift = true;
+      if (e.key.startsWith("Arrow")) arrow = true;
+
+      // Désélection uniquement si l’espace est pressée dans la zone de travail
+      if (e.code === "Space") {
+        const active = document.activeElement;
+        const isTyping =
+          active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA");
+        if (!isTyping) {
+          e.preventDefault();
+          clearSelection();
+          anchorIndex = null;
+        }
+      }
+    });
+
+  document.addEventListener("keyup",e=>{
+    if(e.key==="Control")ctrl=false;
+    if(e.key==="Shift")shift=false;
+    if(e.key.startsWith("Arrow"))arrow=false;
+  });
+
+  // --- Préparer/Effacer tokens ---
+  $("#btnPrep").addEventListener("click",()=>{
+    const raw=elSrc.value.trim();
+    if(!raw){ elWork.innerHTML="(vide)"; return; }
+    const tokens=tokenize(raw);
+    renderTokens(tokens);
+    saveUIToPage();
+  });
+  $("#btnClear").addEventListener("click",()=>{
+    renderTokens([]);
+    saveUIToPage();
+  });
+
+  // --- Toolbar étiquettes ---
+  $$(".toolbar .btn[data-set]").forEach(b=>{
+    b.addEventListener("click",()=>{ if(selectionExists()) setSelectionState(b.dataset.set); });
+  });
+  bUnset.addEventListener("click",()=>{ if(selectionExists()) setSelectionState(""); });
+  bUnsel.addEventListener("click",()=>{ clearSelection(); anchorIndex=null; });
+
+  // --- Navigation pages ---
+  bPrev.addEventListener("click",()=>{ saveUIToPage(); if(idx>0){ idx--; loadPageToUI(); } });
+  bNext.addEventListener("click",()=>{ saveUIToPage(); if(idx<pages.length-1){ idx++; loadPageToUI(); } });
+  bAdd .addEventListener("click",()=>{ saveUIToPage(); pages.splice(idx+1,0,makeEmptyPage()); idx++; loadPageToUI(); });
+  bDup .addEventListener("click",()=>{ saveUIToPage(); pages.splice(idx+1,0,clonePage(pages[idx])); idx++; loadPageToUI(); });
+  bDel .addEventListener("click",()=>{
+    if(pages.length===1){ pages[0]=makeEmptyPage(); idx=0; loadPageToUI(); return; }
+    pages.splice(idx,1);
+    idx=Math.max(0,Math.min(idx,pages.length-1));
+    loadPageToUI();
+  });
+
+  // --- Import / Export ---
+  bImport.addEventListener("click", ()=> fJson.click());
+  fJson.addEventListener("change", async ()=>{
+    const file = fJson.files && fJson.files[0]; if(!file) return;
+    try{
+      let text = await file.text();
+      text = text.replace(/^\uFEFF/, "");
+      const json = JSON.parse(text);
+      if(!Array.isArray(json)||!json.length) throw new Error("Le JSON importé doit être un tableau non vide.");
+      pages = json.map(p=>({ consigne:p.consigne||"", phrase:(p.phrase||[]).map(x=>({mot:x.mot, fonction:x.fonction||""})) }));
+      idx = 0;
+      loadPageToUI();
+    }catch(e){ alert("Import invalide : "+e.message); }
+    finally{ fJson.value=""; }
+  });
+
+  bCopy.addEventListener("click", async ()=>{
+    try{ await navigator.clipboard.writeText(elPrev.textContent); alert("JSON copié !"); }
+    catch(e){ alert("Impossible de copier : "+e); }
+  });
+
+  bSave.addEventListener("click", ()=>{
+    saveUIToPage();
+    const name=(elFname.value.trim()||"exercice.json").replace(/[\\/:*?"<>|]+/g,"_");
+    const blob=new Blob([elPrev.textContent],{type:"application/json"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href);
+  });
+
+  // --- Sync consigne en live ---
+  elCons.addEventListener("input", ()=> saveUIToPage());
+
+    // === Bonus ===
+    const bd=document.getElementById("bonusBackdrop"),
+        qEl=document.getElementById("bonusQuestion"),
+        optsWrap=document.getElementById("bonusOptions"),
+        bBonus=document.getElementById("btnBonus"),
+        bSaveB=document.getElementById("bonusSave"),
+        bCancelB=document.getElementById("bonusCancel");
+
+    function showBonus(s){ bd.classList.toggle("show",s); }
+
+    function makeOptRow(i,text="",ok=false){
+    const d=document.createElement("div");d.className="opt-item";
+    d.innerHTML=`<input type="checkbox" ${ok?"checked":""}>
+                <input type="text" value="${text}" placeholder="Réponse ${i+1}">`;
+    return d;
+    }
+
+   function openBonus(){
+  const pg = pages[idx] || {};
+  const b = pg.bonus || {
+    question: "",
+    options: [
+      { text: "", correct: false },
+      { text: "", correct: false },
+      { text: "", correct: false },
+      { text: "", correct: false }
+    ]
+  };
+
+  qEl.value = b.question || "";
+  optsWrap.innerHTML = "";
+
+  // On affiche toujours 4 lignes maximum
+  const options = b.options.slice(0, 4);
+  for (let i = 0; i < 4; i++) {
+    const opt = options[i] || { text: "", correct: false };
+    optsWrap.appendChild(makeOptRow(i, opt.text, opt.correct));
+  }
+
+  showBonus(true);
+}
+
+
+    function saveBonus(){
+    const opts=[...optsWrap.children].map(c=>({
+        text:c.querySelector('input[type=text]').value.trim(),
+        correct:c.querySelector('input[type=checkbox]').checked
+    })).filter(o=>o.text);
+    if(opts.length<2||opts.length>4){alert("2 à 4 réponses");return;}
+    if(!opts.some(o=>o.correct)){alert("Coche au moins une bonne réponse.");return;}
+    pages[idx].bonus={question:qEl.value.trim(),options:opts};
+    updatePreview();
+    showBonus(false);
+    }
+
+    bBonus.addEventListener("click",openBonus);
+    bSaveB.addEventListener("click",saveBonus);
+    bCancelB.addEventListener("click",()=>showBonus(false));
+    bd.addEventListener("click",e=>{if(e.target===bd)showBonus(false);});
+
+
+  // --- Init ---
+  loadPageToUI();
+});
+</script>
+<!-- Fenêtre bonus -->
+<div id="bonusBackdrop" class="modal-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog">
+    <header>Question bonus (quiz à réponses multiples)</header>
+    <div class="row">
+      <label for="bonusQuestion">Question</label>
+      <textarea id="bonusQuestion" rows="3" placeholder="Énoncé de la question…"></textarea>
+    </div>
+    <div class="row">
+      <label>Réponses possibles <span class="small">(2 à 4, coche = correcte)</span></label>
+      <div id="bonusOptions" class="opts"></div>
+    </div>
+    <div class="actions row" style="justify-content:flex-end">
+      <button id="bonusCancel" class="btn">Annuler</button>
+      <button id="bonusSave" class="btn primary">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

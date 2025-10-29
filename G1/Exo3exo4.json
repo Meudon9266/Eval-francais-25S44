@@ -1,0 +1,196 @@
+[
+  {
+    "consigne": "Indique quelle est la fonction du groupe nominal auquel appartient le mot chien",
+    "phrase": [
+      {
+        "mot": "Mélanie",
+        "fonction": ""
+      },
+      {
+        "mot": "s",
+        "fonction": ""
+      },
+      {
+        "mot": "'",
+        "fonction": ""
+      },
+      {
+        "mot": "occupe",
+        "fonction": ""
+      },
+      {
+        "mot": "très",
+        "fonction": ""
+      },
+      {
+        "mot": "bien",
+        "fonction": ""
+      },
+      {
+        "mot": "de",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "son",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "chien",
+        "fonction": "CVI"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Un",
+        "fonction": "S"
+      },
+      {
+        "mot": "gros",
+        "fonction": "S"
+      },
+      {
+        "mot": "chien",
+        "fonction": "S"
+      },
+      {
+        "mot": "veille",
+        "fonction": ""
+      },
+      {
+        "mot": "devant",
+        "fonction": ""
+      },
+      {
+        "mot": "cette",
+        "fonction": ""
+      },
+      {
+        "mot": "maison",
+        "fonction": ""
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Cet",
+        "fonction": ""
+      },
+      {
+        "mot": "hôtel",
+        "fonction": ""
+      },
+      {
+        "mot": "n",
+        "fonction": ""
+      },
+      {
+        "mot": "'",
+        "fonction": ""
+      },
+      {
+        "mot": "accepte",
+        "fonction": ""
+      },
+      {
+        "mot": "pas",
+        "fonction": ""
+      },
+      {
+        "mot": "les",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "chiens",
+        "fonction": "CVD"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "Indique quelle est la fonction du groupe nominal auquel appartient le mot chien",
+    "phrase": [
+      {
+        "mot": "Les",
+        "fonction": ""
+      },
+      {
+        "mot": "propriétaires",
+        "fonction": ""
+      },
+      {
+        "mot": "de",
+        "fonction": "CN"
+      },
+      {
+        "mot": "ce",
+        "fonction": "CN"
+      },
+      {
+        "mot": "chien",
+        "fonction": "CN"
+      },
+      {
+        "mot": "sont",
+        "fonction": ""
+      },
+      {
+        "mot": "nos",
+        "fonction": ""
+      },
+      {
+        "mot": "voisins",
+        "fonction": ""
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Cet",
+        "fonction": ""
+      },
+      {
+        "mot": "animal",
+        "fonction": ""
+      },
+      {
+        "mot": "sera",
+        "fonction": ""
+      },
+      {
+        "mot": "un",
+        "fonction": "AS"
+      },
+      {
+        "mot": "chien",
+        "fonction": "AS"
+      },
+      {
+        "mot": "protecteur",
+        "fonction": "AS"
+      },
+      {
+        "mot": "pour",
+        "fonction": ""
+      },
+      {
+        "mot": "vos",
+        "fonction": ""
+      },
+      {
+        "mot": "enfants",
+        "fonction": ""
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  }
+]

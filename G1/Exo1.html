@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ExI — Coloriage grammatical (Étapes 1 & 2)</title>
+<style>
+  :root{
+    /* Couleurs de référence (selon les specs) */
+    --c-cjc: #22C1C3;            /* Bleu turquoise CjC */
+    --c-prep: #F66FB0;           /* Rose Préposition */
+    --c-adv: #FFA776;            /* Orange Adverbe */
+    --c-advlog: #BDC3C7;         /* Gris léger connecteur logique */
+
+    --c-verbe: #FFE74C;          /* Jaune canari verbe */
+    --c-sujet: #B8E986;          /* Vert clair sujet */
+    --c-att: #239A3B;            /* Vert foncé attribut (texte blanc) */
+    --c-att-text: #ffffff;
+    --c-cvd: #FF4D4D;            /* Rouge CVD */
+
+    /* Groupes prépositionnels (hachures ou aplats) */
+    --c-cvi: #99CEFF;            /* Bleu ciel CVI */
+    --c-cpl: #C09CFF;            /* Violet clair CPL */
+    --c-cpt: #C8B6FF;            /* Lavande CPT */
+    --c-cpm: #C06C84;            /* Carmin CPM */
+
+    --c-cn-contour: #B08B67;     /* Marron clair contour CN */
+    --c-border: #e5e7eb;
+    --bg: #ffffff;
+    --panel: #f7f7fb;
+    --ink: #111827;
+    --muted: #6b7280;
+    --focus: #2563eb;
+
+    --font: 18px;                /* taille de police évolutive */
+    --radius: 14px;
+    --gap: 14px;
+  }
+
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Segoe UI,system-ui,Arial,sans-serif;font-size:var(--font);}
+  .app{display:grid;grid-template-columns: 1fr 320px;min-height:100dvh}
+  .main{padding:20px 16px 24px;max-width:1100px}
+  .side{padding:20px 16px;background:var(--panel);border-left:1px solid var(--c-border)}
+
+  h1{font-size:1.35rem;margin:0 0 8px}
+  .sub{color:var(--muted);font-size:0.95rem;margin-bottom:14px}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}
+  .btn{border:1px solid var(--c-border);background:#fff;border-radius:12px;padding:8px 12px;cursor:pointer}
+  .btn.primary{background:var(--focus);color:#fff;border-color:var(--focus)}
+  .btn.ghost{background:transparent}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+
+  .exercise{border:1px solid var(--c-border);border-radius:var(--radius);padding:16px 14px;line-height:1.9}
+  .sentence{display:flex;flex-wrap:wrap;gap:6px}
+
+  .tok{
+    padding:4px 8px;border-radius:10px;border:1px solid transparent;transition:.15s transform;
+    user-select:none;cursor:pointer;position:relative
+  }
+  .tok:active{transform:scale(.98)}
+
+  /* Couleurs Étape 1 */
+  .cjc{background:var(--c-cjc);color:#053b3c}
+  .prep{background:var(--c-prep);color:#561a3a}
+  .adv{background:var(--c-adv);color:#5a351c}
+  /* “Transparent” = pas de classe couleur */
+
+  /* Étape 2 : groupes, contours & hachures */
+  .g-hatching{ /* hachures diagonales douces */
+    background-image: repeating-linear-gradient(135deg, transparent 0 6px, rgba(0,0,0,.06) 6px 10px);
+  }
+  .g-cvi{ background:var(--c-cvi); }
+  .g-cpl{ background:var(--c-adv); outline: 3px solid var(--c-cpl); outline-offset: -2px; }
+  .g-cpt{ background:var(--c-adv); outline: 3px solid var(--c-cpt); outline-offset: -2px; }
+  .g-cpm{ background:var(--c-adv); outline: 3px solid var(--c-cpm); outline-offset: -2px; }
+
+  .verbe{ background:var(--c-verbe) }
+  .sujet{ background:var(--c-sujet) }
+  .cvd{ background:var(--c-cvd); color:#fff }
+  .att{ background:var(--c-att); color:var(--c-att-text) }
+  .advlog{ background:var(--c-advlog) }
+
+  .cn-contour{ box-shadow: inset 0 0 0 3px var(--c-cn-contour) }
+
+  .legend{display:flex;flex-direction:column;gap:14px}
+  .legend .card{background:#fff;border:1px solid var(--c-border);border-radius:12px;padding:12px}
+  .legend h3{margin:0 0 8px;font-size:1.05rem}
+  .flex{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .pill{display:inline-flex;align-items:center;gap:8px;border:1px dashed var(--c-border);border-radius:999px;padding:4px 8px;background:#fff}
+  .dot{width:18px;height:18px;border-radius:50%}
+  .desc{color:var(--muted);font-size:.92rem}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .toggle{display:flex;align-items:center;gap:8px;margin-top:8px}
+
+  .scores{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .score{background:#fff;border:1px solid var(--c-border);border-radius:10px;padding:6px 10px;font-variant-numeric:tabular-nums}
+
+  .hint{color:var(--muted);font-size:.9rem;margin:8px 0 0}
+
+  .modal{
+    position:fixed;inset:0;background:rgba(3,6,15,.36);display:none;align-items:center;justify-content:center;padding:20px;z-index:10
+  }
+  .modal.open{display:flex}
+  .sheet{max-width:520px;background:#fff;border-radius:16px;border:1px solid var(--c-border);padding:16px}
+  .sheet h4{margin:0 0 6px}
+  .sheet p{margin:6px 0 12px;color:var(--muted)}
+  .sheet .row{margin-top:4px}
+  .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:6px;padding:1px 6px}
+</style>
+</head>
+<body>
+<div class="app">
+  <main class="main">
+    <h1>ExI — Coloriage des fonctions grammaticales</h1>
+    <div class="sub">Étape 1 : classer les <strong>mots invariables</strong> (CjC, Préposition, Adverbe). Étape 2 : colorer les <strong>groupes prépositionnels</strong> (CVI/CPL/CPT/CPM/CN) et les autres fonctions (sujet, verbe, CVD, attribut, adverbes logiques). Spécifications basées sur ton document. :contentReference[oaicite:2]{index=2}</div>
+
+    <div class="toolbar">
+      <button class="btn" id="fontMinus" title="Réduire la taille du texte">A−</button>
+      <button class="btn" id="fontPlus"  title="Augmenter la taille du texte">A+</button>
+      <span class="desc">| Étape actuelle : <strong id="etapeLabel">1</strong></span>
+      <button class="btn primary" id="valider">Valider l’étape <span id="etapeNum">1</span></button>
+      <button class="btn ghost" id="reset">Réinitialiser</button>
+    </div>
+
+    <section class="exercise">
+      <div id="sentence" class="sentence" aria-live="polite"></div>
+      <div class="scores">
+        <div class="score">Score Étape 1 : <span id="s1">—</span></div>
+        <div class="score">Score Étape 2 : <span id="s2">—</span></div>
+      </div>
+      <p class="hint">Astuce : clique plusieurs fois sur un mot pour parcourir le cycle de couleurs proposé pour l’étape.</p>
+    </section>
+  </main>
+
+  <aside class="side">
+    <div class="legend">
+      <div class="card">
+        <h3>Étape 1 — Mots invariables</h3>
+        <div class="flex">
+          <span class="pill"><span>1er clic</span><span class="dot" style="background:var(--c-cjc)"></span><strong>CjC</strong></span>
+          <span class="pill"><span>2e clic</span><span class="dot" style="background:var(--c-prep)"></span><strong>Préposition</strong></span>
+          <span class="pill"><span>3e clic</span><span class="dot" style="background:var(--c-adv)"></span><strong>Adverbe</strong></span>
+          <span class="pill"><span>4e clic</span><span class="dot" style="background:transparent;border:1px solid var(--c-border)"></span><strong>Transparent</strong></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Étape 2 — Groupes & fonctions</h3>
+        <div class="row">
+          <span class="pill"><span class="dot" style="background:var(--c-cvi)"></span> <strong>CVI</strong></span>
+          <span class="pill"><span class="dot" style="background:var(--c-adv);outline:3px solid var(--c-cpl)"></span> <strong>CPL</strong></span>
+          <span class="pill"><span class="dot" style="background:var(--c-adv);outline:3px solid var(--c-cpt)"></span> <strong>CPT</strong></span>
+          <span class="pill"><span class="dot" style="background:var(--c-adv);outline:3px solid var(--c-cpm)"></span> <strong>CPM</strong></span>
+          <span class="pill"><span class="dot" style="background:transparent;border:3px solid var(--c-cn-contour)"></span> <strong>CN (contour)</strong></span>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <span class="pill"><span class="dot" style="background:var(--c-sujet)"></span> Sujet</span>
+          <span class="pill"><span class="dot" style="background:var(--c-verbe)"></span> Verbe</span>
+          <span class="pill"><span class="dot" style="background:var(--c-cvd)"></span> CVD</span>
+          <span class="pill"><span class="dot" style="background:var(--c-att)"></span> Attribut</span>
+          <span class="pill"><span class="dot" style="background:var(--c-advlog)"></span> Adv logique</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="askLinks" checked/>
+          Afficher la question de rattachement à chaque préposition
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="askPaint" checked/>
+          Afficher la palette CVI/CPL/CPT/CPM lors du marquage
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="showCN" checked/>
+          Tracer le contour marron des <span class="kbd">&lt;mots&gt;cn</span>
+        </label>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- Modal de rattachement Gprep -->
+<div class="modal" id="modalLink">
+  <div class="sheet">
+    <h4>Rattacher le groupe prépositionnel</h4>
+    <p>À quel mot ou groupe ce complément est-il rattaché par la préposition sélectionnée ?</p>
+    <div class="row">
+      <button class="btn" id="linkToNom">Au <strong>nom</strong> qui précède (CN)</button>
+      <button class="btn" id="linkToVerbe">Au <strong>verbe</strong> qui précède</button>
+      <button class="btn ghost" id="cancelLink">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- Palette de choix Gprep -->
+<div class="modal" id="modalPaint">
+  <div class="sheet">
+    <h4>Colorer le groupe sélectionné</h4>
+    <p>Choisis la catégorie du Gprep (tu peux ré-cliquer ensuite pour changer).</p>
+    <div class="row">
+      <button class="btn" data-gpaint="g-cvi">CVI</button>
+      <button class="btn" data-gpaint="g-cpl">CPL</button>
+      <button class="btn" data-gpaint="g-cpt">CPT</button>
+      <button class="btn" data-gpaint="g-cpm">CPM</button>
+      <button class="btn ghost" id="cancelPaint">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/** =======================
+ *  Données d'exemple (JS/JSON)
+ *  Chaque token a: txt, tags[], gid (id de groupe), gtype (sujet, verbe, cvd, att, cn, cvi/cpl/cpt/cpm, adv, advlog, cjc, prep, nom)
+ *  ======================= */
+const DATA_EXO = {
+  id: "exoColoriage_demo_v1",
+  sentence: [
+    {txt:"Les", tags:["sujet"]},
+    {txt:"brawlers", tags:["sujet","nom"], gid:"GN1"},
+    {txt:"fêtent", tags:["verbe"]},
+    {txt:"leur", tags:["cn"], gid:"CN1"},
+    {txt:"victoire", tags:["cn","nom"], gid:"CN1"},
+    {txt,"tags":["cpl","prep","GPREP"], gid:"GP1", txt:"autour"},
+    {txt:"d’", tags:["cpl","prep","GPREP"], gid:"GP1"},
+    {txt:"un", tags:["cpl"], gid:"GP1"},
+    {txt:"feu", tags:["cpl","nom"], gid:"GP1"},
+    {txt:",", tags:[]},
+    {txt:"fiers", tags:["att"]},
+    {txt:"de", tags:["cpt","prep","GPREP"], gid:"GP2"},
+    {txt:"leur", tags:["cpt"], gid:"GP2"},
+    {txt:"mission", tags:["cpt","nom"], gid:"GP2"},
+    {txt:"accomplie", tags:["cpt"], gid:"GP2"},
+    {txt:".", tags:[]}
+  ]
+};
+// petite correction de la clé "txt" manquante sur un élément
+DATA_EXO.sentence = DATA_EXO.sentence.map(t => (typeof t.txt==="string"?t:{...t, txt:t.txt||t.txt}));
+
+/** =======================
+ *  État
+ *  ======================= */
+let ETAPE = 1; // 1 ou 2
+let penalty = 0; // pénalités -0.5 pour rattachements erronés (étape 2)
+const s1Key = DATA_EXO.id + "_score_step1";
+const s2Key = DATA_EXO.id + "_score_step2";
+
+/** =======================
+ *  Helpers
+ *  ======================= */
+const $ = sel => document.querySelector(sel);
+function cm2SetFontSize(delta){
+  // hook simple: incrémente var CSS
+  const root = document.documentElement;
+  const curr = parseFloat(getComputedStyle(root).getPropertyValue('--font')) || 18;
+  let next = Math.min(30, Math.max(14, curr + delta));
+  root.style.setProperty('--font', next + "px");
+}
+function persistScore(key, value){
+  try{ localStorage.setItem(key, String(value)); }catch(e){}
+}
+function loadScore(key){
+  try{ return localStorage.getItem(key); }catch(e){ return null; }
+}
+function percent(n,d){ return (d===0)?0:Math.round((n/d)*100); }
+
+function is(type, tok){ return tok.tags?.includes(type); }
+
+/** =======================
+ *  Rendu de la phrase
+ *  ======================= */
+const container = $("#sentence");
+function render(){
+  container.innerHTML = "";
+  DATA_EXO.sentence.forEach((tok, idx) => {
+    const span = document.createElement("span");
+    span.className = "tok";
+    span.textContent = tok.txt;
+    span.dataset.idx = idx;
+
+    // marqueurs utilitaires pour l'étape 2
+    if($("#showCN").checked && is("cn", tok) && tok.gid){ span.classList.add("cn-contour"); }
+
+    // gestion clics selon l'étape
+    span.addEventListener("click", () => onClickToken(idx));
+    container.appendChild(span);
+  });
+}
+
+/** =======================
+ *  Étape 1 — Cycle CjC / Préposition / Adverbe / Transparent
+ *  ======================= */
+function cycleEtape1(span){
+  const classes = ["cjc","prep","adv"]; // 1,2,3 clics
+  let current = classes.findIndex(c => span.classList.contains(c));
+  // purge
+  classes.forEach(c => span.classList.remove(c));
+  // avance
+  current = (current + 1) % 4; // 0..3 (3 => transparent)
+  if(current<=2) span.classList.add(classes[current]);
+}
+
+function scoreEtape1(){
+  // Attendus: advlog compte comme adv.
+  let total = 0, good = 0;
+  DATA_EXO.sentence.forEach((tok, idx) => {
+    const span = container.querySelector(`[data-idx="${idx}"]`);
+    if(is("cjc",tok) || is("prep",tok) || is("adv",tok) || is("advlog",tok)){
+      total++;
+      const need = is("cjc",tok) ? "cjc" :
+                   is("prep",tok) ? "prep" :
+                   (is("adv",tok) || is("advlog",tok)) ? "adv" : null;
+      if(need && span.classList.contains(need)) good++;
+    }
+  });
+  const p = percent(good, total);
+  $("#s1").textContent = p + " %";
+  persistScore(s1Key, p);
+}
+
+/** =======================
+ *  Étape 2 — Gprep + fonctions
+ *  ======================= */
+
+// Au passage à l’étape 2 : teinter auto tous les mots APRÈS chaque préposition dans le même GID
+function primeStep2AutoTint(){
+  DATA_EXO.sentence.forEach((tok, idx) => {
+    if(is("prep",tok) && tok.gid){
+      // colorer APRÈS la prép (même gid) avec hachures attente
+      for(let j=idx+1;j<DATA_EXO.sentence.length;j++){
+        const t2 = DATA_EXO.sentence[j];
+        if(t2.gid === tok.gid){
+          const s2 = container.querySelector(`[data-idx="${j}"]`);
+          s2.classList.add("g-hatching");
+        }else if(t2.gid && t2.gid!==tok.gid){
+          // autre groupe rencontré -> on s'arrête quand on sort du groupe
+          // (simplification : on s'arrête quand gid change après avoir commencé)
+          // on continue tant que même gid
+          // Ici on ne break pas tant que gid reste égal, mais si autre gid intervient on stoppe.
+          break;
+        }
+      }
+    }
+  });
+}
+
+let pendingPrepIdx = null; // préparation de rattachement à CN ou Verbe
+function onClickEtape2(span, idx){
+  const tok = DATA_EXO.sentence[idx];
+
+  // Si clic sur une préposition: proposer rattachement (CN/Verbe) une seule fois
+  if(is("prep", tok)){
+    pendingPrepIdx = idx;
+    if($("#askLinks").checked) openModalLink();
+    return;
+  }
+
+  // Cycles contextuels (simplifiés) selon la catégorie de base
+  if(is("verbe", tok)){
+    // 1= attribut, 2= verbe, 3= CVD
+    const cycle = ["att","verbe","cvd"];
+    cycleClasses(span, cycle);
+    return;
+  }
+  if(is("cvd", tok)){
+    // 1= sujet, 2= attribut, 3= cvd, 4= cvi
+    const cycle = ["sujet","att","cvd","g-cvi"];
+    cycleClasses(span, cycle);
+    return;
+  }
+  if(is("sujet", tok)){
+    const cycle = ["sujet","att","cvd","g-cvi"];
+    cycleClasses(span, cycle);
+    return;
+  }
+  if(is("adv", tok)){
+    // adverbe de phrase : CPL/CPT/CPM par contour
+    const cycle = ["g-cpl","g-cpt","g-cpm","advlog"];
+    cycleClasses(span, cycle);
+    return;
+  }
+
+  // Si clic dans un Gprep déjà hachuré => proposer peinture (CVI/CPL/CPT/CPM)
+  if(span.classList.contains("g-hatching") || span.classList.contains("g-cvi") || span.classList.contains("g-cpl") || span.classList.contains("g-cpt") || span.classList.contains("g-cpm")){
+    if($("#askPaint").checked) {
+      openModalPaint(idx);
+    }else{
+      // toggle simple entre CVI -> CPL -> CPT -> CPM
+      const order = ["g-cvi","g-cpl","g-cpt","g-cpm"];
+      cycleClasses(span, order, (cls) => colorWholeGid(idx, cls));
+    }
+    return;
+  }
+}
+
+// utilitaire de cycle et application à tout le groupe (optionnel via callback)
+function cycleClasses(span, order, onSet){
+  let k = order.findIndex(c => span.classList.contains(c));
+  order.forEach(c=>span.classList.remove(c));
+  k = (k+1) % order.length;
+  span.classList.remove("g-hatching");
+  span.classList.add(order[k]);
+  if(onSet) onSet(order[k]);
+}
+function colorWholeGid(idx, cls){
+  const gid = DATA_EXO.sentence[idx].gid;
+  if(!gid) return;
+  DATA_EXO.sentence.forEach((t,i)=>{
+    if(t.gid===gid){
+      const s = container.querySelector(`[data-idx="${i}"]`);
+      s.classList.remove("g-hatching","g-cvi","g-cpl","g-cpt","g-cpm");
+      s.classList.add(cls);
+    }
+  });
+  // contour CN interne si demandé
+  if($("#showCN").checked){
+    DATA_EXO.sentence.forEach((t,i)=>{
+      if(t.gid===gid && is("cn", t)){
+        container.querySelector(`[data-idx="${i}"]`)?.classList.add("cn-contour");
+      }
+    });
+  }
+}
+
+// Modal rattachement
+function openModalLink(){ $("#modalLink").classList.add("open"); }
+function closeModalLink(){ $("#modalLink").classList.remove("open"); }
+$("#cancelLink").onclick = closeModalLink;
+
+$("#linkToNom").onclick = () => {
+  if(pendingPrepIdx==null) return closeModalLink();
+  // Vérifier qu'un <mot>nom précède DANS UN CN (simplifié : chercher un token avec tag 'nom' avant)
+  const ok = findBefore(pendingPrepIdx, t => is("nom", t));
+  applyLinkResult(pendingPrepIdx, ok ? "CN" : null);
+  closeModalLink();
+};
+$("#linkToVerbe").onclick = () => {
+  if(pendingPrepIdx==null) return closeModalLink();
+  const ok = findBefore(pendingPrepIdx, t => is("verbe", t));
+  applyLinkResult(pendingPrepIdx, ok ? "VERBE" : null);
+  closeModalLink();
+};
+function findBefore(fromIdx, pred){
+  for(let i=fromIdx-1;i>=0;i--) if(pred(DATA_EXO.sentence[i])) return i;
+  return -1;
+}
+function blinkRed(span){
+  const orig = span.style.outline;
+  span.style.outline = "3px solid #ef4444";
+  setTimeout(()=>{ span.style.outline = orig || ""; }, 250);
+}
+function applyLinkResult(prepIdx, kind){
+  const prepSpan = container.querySelector(`[data-idx="${prepIdx}"]`);
+  const gid = DATA_EXO.sentence[prepIdx].gid;
+  if(!gid){ blinkRed(prepSpan); penalty+=0.5; return; }
+
+  if(kind==="CN"){
+    // colorer TOUT le CN (contour) du groupe s'il existe
+    const hadCN = tintCNinGroup(gid);
+    if(!hadCN){ blinkRed(prepSpan); penalty+=0.5; }
+  }else if(kind==="VERBE"){
+    // mettre le groupe en hachures “en attente” (déjà effectué à l’entrée Étape 2)
+    // rien de plus ici, l’élève devra peindre (CVI/CPL/CPT/CPM)
+    // petit feedback visuel
+    prepSpan.classList.add("g-hatching");
+  }else{
+    blinkRed(prepSpan); penalty+=0.5;
+  }
+}
+function tintCNinGroup(gid){
+  let found = false;
+  DATA_EXO.sentence.forEach((t,i)=>{
+    if(t.gid===gid && is("cn", t)){
+      const s = container.querySelector(`[data-idx="${i}"]`);
+      s.classList.add("cn-contour");
+      found = true;
+    }
+  });
+  return found;
+}
+
+// Modal peinture Gprep
+let paintTargetIdx = null;
+function openModalPaint(idx){
+  paintTargetIdx = idx;
+  $("#modalPaint").classList.add("open");
+}
+function closeModalPaint(){
+  $("#modalPaint").classList.remove("open"); paintTargetIdx=null;
+}
+$("#cancelPaint").onclick = closeModalPaint;
+$("#modalPaint").addEventListener("click", (e)=>{
+  const btn = e.target.closest("button[data-gpaint]");
+  if(!btn) return;
+  const cls = btn.dataset.gpaint;
+  if(paintTargetIdx!=null){
+    colorWholeGid(paintTargetIdx, cls);
+  }
+  closeModalPaint();
+});
+
+/** =======================
+ *  Gestion des clics
+ *  ======================= */
+function onClickToken(idx){
+  const span = container.querySelector(`[data-idx="${idx}"]`);
+  if(ETAPE===1){
+    // Seuls les mots invariables sont “corrigés” en étape 1, mais on autorise le cycle sur n’importe quel mot
+    cycleEtape1(span);
+  }else{
+    onClickEtape2(span, idx);
+  }
+}
+
+/** =======================
+ *  Validation & scores
+ *  ======================= */
+function validateStep(){
+  if(ETAPE===1){
+    scoreEtape1();
+    // passer en étape 2
+    ETAPE = 2;
+    $("#etapeLabel").textContent = "2";
+    $("#etapeNum").textContent = "2";
+    primeStep2AutoTint();
+  }else{
+    // Score Étape 2 (simplifié) : points sur
+    // - chaque Gprep coloré (CVI/CPL/CPT/CPM) = 1
+    // - + sujets/verbes/CVD/att correctement tagués = 1 chacun
+    // - – 0.5 * pénalités
+    let total = 0, good = 0;
+
+    // Gprep attendus: tous les groupes portant tag GPREP (ici via 'GPREP' dans tags ou gtype)
+    const groupIds = new Set(DATA_EXO.sentence.filter(t => t.tags?.includes("GPREP")).map(t=>t.gid).filter(Boolean));
+    groupIds.forEach(gid=>{
+      total++;
+      // correct si au moins un token du gid a une classe g-cvi/g-cpl/g-cpt/g-cpm
+      let ok=false;
+      DATA_EXO.sentence.forEach((t,i)=>{
+        if(t.gid===gid){
+          const s = container.querySelector(`[data-idx="${i}"]`);
+          if(s.classList.contains("g-cvi")||s.classList.contains("g-cpl")||s.classList.contains("g-cpt")||s.classList.contains("g-cpm")) ok=true;
+        }
+      });
+      if(ok) good++;
+    });
+
+    // fonctions simples
+    const checks = [
+      {tag:"sujet", cls:"sujet"},
+      {tag:"verbe", cls:"verbe"},
+      {tag:"cvd", cls:"cvd"},
+      {tag:"att", cls:"att"},
+    ];
+    checks.forEach(ch=>{
+      const idx = DATA_EXO.sentence.findIndex(t=>is(ch.tag,t));
+      if(idx>=0){
+        total++;
+        const s = container.querySelector(`[data-idx="${idx}"]`);
+        if(s.classList.contains(ch.cls)) good++;
+      }
+    });
+
+    let score = Math.max(0, ((good - penalty)/(total||1))*100);
+    const p = Math.round(score);
+    $("#s2").textContent = p + " %";
+    persistScore(s2Key, p);
+    penalty = 0; // reset pénalités pour rejouer
+  }
+}
+
+/** =======================
+ *  UI — boutons
+ *  ======================= */
+$("#valider").addEventListener("click", validateStep);
+$("#reset").addEventListener("click", ()=>{
+  penalty = 0; ETAPE = 1;
+  $("#etapeLabel").textContent = "1";
+  $("#etapeNum").textContent = "1";
+  ["s1","s2"].forEach(id=>$("#"+id).textContent="—");
+  render();
+});
+$("#fontMinus").addEventListener("click", ()=>cm2SetFontSize(-2));
+$("#fontPlus").addEventListener("click", ()=>cm2SetFontSize(+2));
+
+/** =======================
+ *  Boot
+ *  ======================= */
+(function init(){
+  render();
+  // charger scores précédents
+  const a = loadScore(s1Key); if(a!=null) $("#s1").textContent = a + " %";
+  const b = loadScore(s2Key); if(b!=null) $("#s2").textContent = b + " %";
+})();
+</script>
+</body>
+</html>

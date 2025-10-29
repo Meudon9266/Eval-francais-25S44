@@ -1,0 +1,507 @@
+[
+  {
+    "consigne": "Identifie les attributs du sujet, s'il y en a.",
+    "phrase": [
+      {
+        "mot": "Ton",
+        "fonction": ""
+      },
+      {
+        "mot": "nouvel",
+        "fonction": ""
+      },
+      {
+        "mot": "ordinateur",
+        "fonction": ""
+      },
+      {
+        "mot": "semble",
+        "fonction": ""
+      },
+      {
+        "mot": "performant",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Ce",
+        "fonction": ""
+      },
+      {
+        "mot": "conducteur",
+        "fonction": ""
+      },
+      {
+        "mot": "est",
+        "fonction": ""
+      },
+      {
+        "mot": "un",
+        "fonction": "AS"
+      },
+      {
+        "mot": "danger",
+        "fonction": "AS"
+      },
+      {
+        "mot": "public",
+        "fonction": "AS"
+      },
+      {
+        "mot": "!",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "Identifie les attributs du sujet, s'il y en a.",
+    "phrase": [
+      {
+        "mot": "Le",
+        "fonction": ""
+      },
+      {
+        "mot": "paysage",
+        "fonction": ""
+      },
+      {
+        "mot": "que",
+        "fonction": ""
+      },
+      {
+        "mot": "nous",
+        "fonction": ""
+      },
+      {
+        "mot": "contemplons",
+        "fonction": ""
+      },
+      {
+        "mot": "est",
+        "fonction": ""
+      },
+      {
+        "mot": "magnifique",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Cette",
+        "fonction": ""
+      },
+      {
+        "mot": "histoire",
+        "fonction": ""
+      },
+      {
+        "mot": "me",
+        "fonction": ""
+      },
+      {
+        "mot": "semble",
+        "fonction": ""
+      },
+      {
+        "mot": "invraisemblable",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Albert",
+        "fonction": ""
+      },
+      {
+        "mot": "a",
+        "fonction": ""
+      },
+      {
+        "mot": "été",
+        "fonction": ""
+      },
+      {
+        "mot": "plombier",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "Identifie les attributs du sujet, s'il y en a.",
+    "phrase": [
+      {
+        "mot": "Dans",
+        "fonction": ""
+      },
+      {
+        "mot": "ce",
+        "fonction": ""
+      },
+      {
+        "mot": "conte",
+        "fonction": ""
+      },
+      {
+        "mot": ",",
+        "fonction": ""
+      },
+      {
+        "mot": "le",
+        "fonction": ""
+      },
+      {
+        "mot": "crapaud",
+        "fonction": ""
+      },
+      {
+        "mot": "est",
+        "fonction": ""
+      },
+      {
+        "mot": "un",
+        "fonction": "AS"
+      },
+      {
+        "mot": "prince",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Le",
+        "fonction": ""
+      },
+      {
+        "mot": "tennis",
+        "fonction": ""
+      },
+      {
+        "mot": "reste",
+        "fonction": ""
+      },
+      {
+        "mot": "un",
+        "fonction": "AS"
+      },
+      {
+        "mot": "sport",
+        "fonction": "AS"
+      },
+      {
+        "mot": "individuel",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Cette",
+        "fonction": ""
+      },
+      {
+        "mot": "dame",
+        "fonction": ""
+      },
+      {
+        "mot": "parait",
+        "fonction": ""
+      },
+      {
+        "mot": "triste",
+        "fonction": "AS"
+      },
+      {
+        "mot": "et",
+        "fonction": "AS"
+      },
+      {
+        "mot": "angoissée",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "Trouve les attributs du sujet",
+    "phrase": [
+      {
+        "mot": "Ce",
+        "fonction": ""
+      },
+      {
+        "mot": "matin",
+        "fonction": ""
+      },
+      {
+        "mot": ",",
+        "fonction": ""
+      },
+      {
+        "mot": "Nathan",
+        "fonction": ""
+      },
+      {
+        "mot": "est",
+        "fonction": ""
+      },
+      {
+        "mot": "de",
+        "fonction": "AS"
+      },
+      {
+        "mot": "méchante",
+        "fonction": "AS"
+      },
+      {
+        "mot": "humeur",
+        "fonction": "AS"
+      },
+      {
+        "mot": "et",
+        "fonction": ""
+      },
+      {
+        "mot": "ronchonne",
+        "fonction": ""
+      },
+      {
+        "mot": "vivement",
+        "fonction": ""
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Flora",
+        "fonction": ""
+      },
+      {
+        "mot": "paraissait",
+        "fonction": ""
+      },
+      {
+        "mot": "incapable",
+        "fonction": "AS"
+      },
+      {
+        "mot": "de",
+        "fonction": "AS"
+      },
+      {
+        "mot": "battre",
+        "fonction": "AS"
+      },
+      {
+        "mot": "son",
+        "fonction": "AS"
+      },
+      {
+        "mot": "record",
+        "fonction": "AS"
+      },
+      {
+        "mot": "et",
+        "fonction": "AS"
+      },
+      {
+        "mot": "très",
+        "fonction": "AS"
+      },
+      {
+        "mot": "déçue",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Ces",
+        "fonction": ""
+      },
+      {
+        "mot": "trois",
+        "fonction": ""
+      },
+      {
+        "mot": "acolytes",
+        "fonction": ""
+      },
+      {
+        "mot": "deviennent",
+        "fonction": ""
+      },
+      {
+        "mot": "un",
+        "fonction": "AS"
+      },
+      {
+        "mot": "étrange",
+        "fonction": "AS"
+      },
+      {
+        "mot": "trio",
+        "fonction": "AS"
+      },
+      {
+        "mot": "recherché",
+        "fonction": "AS"
+      },
+      {
+        "mot": "par",
+        "fonction": "AS"
+      },
+      {
+        "mot": "la",
+        "fonction": "AS"
+      },
+      {
+        "mot": "Police",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "Trouve les attributs",
+    "phrase": [
+      {
+        "mot": "Ce",
+        "fonction": ""
+      },
+      {
+        "mot": "jeune",
+        "fonction": ""
+      },
+      {
+        "mot": "artiste",
+        "fonction": ""
+      },
+      {
+        "mot": ",",
+        "fonction": ""
+      },
+      {
+        "mot": "qui",
+        "fonction": ""
+      },
+      {
+        "mot": "vient",
+        "fonction": ""
+      },
+      {
+        "mot": "de",
+        "fonction": ""
+      },
+      {
+        "mot": "s",
+        "fonction": ""
+      },
+      {
+        "mot": "'",
+        "fonction": ""
+      },
+      {
+        "mot": "installer",
+        "fonction": ""
+      },
+      {
+        "mot": ",",
+        "fonction": ""
+      },
+      {
+        "mot": "semble",
+        "fonction": ""
+      },
+      {
+        "mot": "très",
+        "fonction": "AS"
+      },
+      {
+        "mot": "prometteur",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Malgré",
+        "fonction": ""
+      },
+      {
+        "mot": "la",
+        "fonction": ""
+      },
+      {
+        "mot": "distance",
+        "fonction": ""
+      },
+      {
+        "mot": "qui",
+        "fonction": ""
+      },
+      {
+        "mot": "les",
+        "fonction": ""
+      },
+      {
+        "mot": "sépare",
+        "fonction": ""
+      },
+      {
+        "mot": ",",
+        "fonction": ""
+      },
+      {
+        "mot": "les",
+        "fonction": ""
+      },
+      {
+        "mot": "deux",
+        "fonction": ""
+      },
+      {
+        "mot": "amies",
+        "fonction": ""
+      },
+      {
+        "mot": "demeurent",
+        "fonction": ""
+      },
+      {
+        "mot": "très",
+        "fonction": "AS"
+      },
+      {
+        "mot": "proches",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  }
+]

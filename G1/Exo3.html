@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Exo3 – CVD • CVI • Attribut du sujet • CN</title>
+<style>
+  :root{
+    --CVD:#FDE9B8; --CVI:#FCD7D2; --AS:#EBDDFF;
+    --UNK:#ffffff; --txt:#1f2937;  --CN:#EAD1C4;  
+  }
+  body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#f7f7fb;color:var(--txt);}
+  .wrap{max-width:980px;margin:24px auto;padding:0 12px;}
+  h1{margin:0 0 8px;font-size:1.2rem;}
+  .headbar{display:flex;gap:10px;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;margin:10px 0 18px;}
+  .btn{appearance:none;border:1px solid #d1d5db;background:#fff;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700;}
+  .btn:hover{background:#f3f4f6;}
+  .btn.primary{background:#2563eb;color:#fff;border-color:#2563eb;}
+  .btn.primary:disabled{opacity:.5;cursor:not-allowed;}
+  .btn.ghost{background:#fff;border-color:#e5e7eb;}
+  .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px;box-shadow:0 6px 16px rgba(0,0,0,.04);}
+  .consigne{margin:0 0 8px;font-weight:800;color:#b91c1c;font-size:1.1rem;}
+  .phrase-wrap{margin:10px 0 6px;min-height:120px;}
+  .tok{
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:6px 10px;margin:6px 4px;border-radius:12px;
+    background:transparent;border:2px solid transparent;font-weight:800;
+    user-select:none;cursor:pointer;position:relative;
+    transition:background-color .12s,border-color .12s,color .12s;
+    color:var(--txt);
+  }
+  .tok.sel{outline:3px dashed #60a5fa;outline-offset:2px;}
+  .tok[data-state="CVD"] {background:var(--CVD);border-color:#fbbf24;}
+  .tok[data-state="CVI"] {background:var(--CVI);border-color:#fda4af;}
+  .tok[data-state="AS"]  {background:var(--AS); border-color:#c4b5fd;}
+  .tok[data-state="CN"]  { background:var(--CN);  border-color:#b45309; }
+  .tok[data-state=""]    {background:transparent;border-color:transparent;}
+  .tok::after{
+    content:attr(data-state);
+    position:absolute;right:6px;bottom:-12px;
+    font-size:.95em;font-weight:900;border-radius:4px;padding:1px 4px;pointer-events:none;opacity:.95;
+  }
+  .tok[data-state="CVD"]::after {background:var(--CVD);color:#d97706;}
+  .tok[data-state="CVI"]::after {background:var(--CVI);color:#e11d48;}
+  .tok[data-state="AS"]::after  {background:var(--AS); color:#6d28d9;}
+  .tok[data-state="CN"]::after  { background:var(--CN);  color:#92400e; } 
+  .tok[data-state=""]::after {content:"";}
+  .tok.ok{box-shadow:0 0 0 3px rgba(16,185,129,.35) inset;}
+    /* affichage hachuré pour les réponses fausses (pendant la correction) */
+  .tok.ko{
+    /* on conserve la couleur d’état en fond et on ajoute un motif hachuré par-dessus */
+    background-image: repeating-linear-gradient(
+      45deg,
+      rgba(0,0,0,0.13) 0 6px,
+      transparent 6px 12px
+    );
+  }
+  .tok.sel{ outline: 3px dashed #60a5fa; outline-offset: 2px; }
+  .actions{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap;}
+  .scoreline{font-weight:900;}
+
+  /* === Quiz Bonus === */
+.modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; z-index:9999;}
+.modal-backdrop.show{display:flex;}
+.modal{width:min(700px,92vw); background:#fff; border-radius:12px; border:1px solid #e5e7eb; box-shadow:0 20px 50px rgba(0,0,0,.25); padding:16px;}
+.modal header{font-weight:800; font-size:1.1rem; margin-bottom:8px;}
+.modal .row{margin:8px 0;}
+.modal .opts{display:flex; flex-direction:column; gap:8px;}
+.modal label{display:flex; gap:8px; align-items:flex-start;}
+.modal .actions{display:flex; gap:8px; justify-content:flex-end; margin-top:12px;}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="headbar">
+    <button id="btnAccueil" class="btn">Accueil</button>
+    <button id="btnReset" class="btn ghost" title="Réinitialiser les scores">Reset</button>
+  <div id="scoreCumul" class="score-cumul">Score page : 0</div>
+  </div>
+
+  <h1>Groupes de mots : CVD • CVI • Attribut du sujet • CN</h1>
+
+  <div class="card">
+    <p class="consigne" id="consigneDyn">Consigne : chargement…</p>
+    <div id="workspace" class="phrase-wrap"></div>
+
+    <div class="actions">
+      <button id="btnValider" class="btn primary">Valider</button>
+      <button id="btnReessayer" class="btn ghost">Réessayer</button>
+      <button id="btnSuivant" class="btn">Phrase suivante →</button>
+      <span class="scoreline" id="scoreLine"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $  = (s,root=document)=>root.querySelector(s);
+  const $$ = (s,root=document)=>Array.from(root.querySelectorAll(s));
+
+  // ---- Cycle spécifique à Exo3 ----
+  const CYCLE = ["CVD","CVI","AS","CN",""];
+
+  // ---- État global ----
+  let data=[], idx=0, locked=false, attempts=0;
+  const qs = new URLSearchParams(location.search);
+  const FILE = qs.get("file") || "Exo3exo1.json";
+
+  const elW=$("#workspace"), elC=$("#consigneDyn"), scCum=$("#scoreCumul"), scLine=$("#scoreLine");
+  const bV=$("#btnValider"), bR=$("#btnReessayer"), bN=$("#btnSuivant"), bH=$("#btnAccueil");
+
+  // ---- Clés localStorage ----
+  const PAGE_KEY  = "Exo3_score_"+FILE;   // score page/fichier
+  const TOTAL_OK  = "Exo3_total_ok";      // score global (ok)
+  const TOTAL_TOT = "Exo3_total_tot";     // global (tot)
+  const WRONG_KEY = "Exo3_wrong_"+FILE;   // journal erreurs pour ce fichier
+
+  function doReset(){
+  localStorage.removeItem(PAGE_KEY);
+  localStorage.removeItem(TOTAL_OK);
+  localStorage.removeItem(TOTAL_TOT);
+  localStorage.removeItem(WRONG_KEY);
+  wrongLog = [];
+  scLine.textContent = "";
+  updateCumul();
+  alert("Scores et journal des erreurs remis à zéro.");
+  }
+
+  // ---- Journal des erreurs ----
+  // [{ file, phraseIndex, attempt, consigne, wrong:[{index,mot,attendu,eleve}] }]
+  let wrongLog = [];
+
+  // ----- Modifieurs et ancre (multi-sélection)
+  let ctrl=false, shift=false, arrow=false;
+  let anchorIndex = null;
+
+  // ---------- Utilitaires ----------
+  function extractExerciseNumber(file){
+    const m = String(file).match(/Exo3exo(\d+)/i);
+    return m ? m[1] : "X";
+  }
+  function downloadHTML(filename, htmlString){
+    const blob = new Blob([htmlString], {type:"text/html;charset=utf-8"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  function loadWrongLog(){
+    try{
+      const raw = localStorage.getItem(WRONG_KEY);
+      if(raw){ wrongLog = JSON.parse(raw) || []; }
+    }catch(_){}
+  }
+  function saveWrongLog(){ localStorage.setItem(WRONG_KEY, JSON.stringify(wrongLog)); }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[c]));
+  }
+  function renderReportHTML(prenom){
+    const exNum = extractExerciseNumber(FILE);
+    const dateStr = new Date().toLocaleString();
+    const pageScore = localStorage.getItem(PAGE_KEY)||"0";
+    const gOk=parseInt(localStorage.getItem(TOTAL_OK)||"0",10);
+    const gTot=parseInt(localStorage.getItem(TOTAL_TOT)||"0",10);
+    const p = gTot?Math.round(100*gOk/gTot):0;
+
+    const header = `
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Rapport erreurs – ${prenom} – Exo3exo${exNum}</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:24px;background:#f8fafc;color:#0f172a}
+  h1{margin:0 0 12px;font-size:1.25rem}
+  .meta{margin:0 0 18px;color:#334155}
+  .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px;margin:10px 0}
+  table{width:100%;border-collapse:collapse;font-size:.95rem}
+  th,td{border:1px solid #e5e7eb;padding:6px 8px;text-align:left;vertical-align:top}
+  th{background:#f1f5f9}
+  .ok{color:#059669}.ko{color:#dc2626}
+  .section-title{font-weight:800;margin:8px 0}
+  .small{opacity:.75}
+  .pill{display:inline-block;padding:2px 6px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:700;font-size:.8rem;margin-left:6px}
+  .noerr{color:#065f46;font-weight:700}
+  .foot{margin-top:16px;color:#475569;font-size:.9rem}
+</style>
+</head><body>
+<h1>Rapport des erreurs – Exo3exo${exNum} <span class="pill">${prenom}</span></h1>
+<p class="meta">Fichier JSON : <strong>${FILE}</strong><br>Date : ${dateStr}</p>
+`;
+    let blocks = [];
+    wrongLog.forEach(e=>{
+      const title = `Phrase #${e.phraseIndex+1} — Tentative #${e.attempt}`;
+      let rows = "";
+      if(!e.wrong || e.wrong.length===0){
+        rows = `<tr><td colspan="4" class="noerr">Aucune erreur.</td></tr>`;
+      }else{
+        rows = `<tr><th>#</th><th>Mot</th><th>Attendu</th><th>Donné</th></tr>` +
+               e.wrong.map(w=>(
+                 `<tr>
+                    <td>${w.index+1}</td>
+                    <td>${escapeHtml(w.mot)}</td>
+                    <td>${w.attendu}</td>
+                    <td class="${w.attendu===w.eleve?'ok':'ko'}">${w.eleve}</td>
+                  </tr>`
+               )).join("");
+      }
+      blocks.push(`
+        <div class="card">
+          <div class="section-title">${title}</div>
+          <div class="small">Consigne : ${escapeHtml(e.consigne||"")}</div>
+          <table>${rows}</table>
+        </div>
+      `);
+    });
+    const footer = `
+    <div class="card">
+      <div class="section-title">Récapitulatif</div>
+      <p>Score page : <strong>${pageScore}</strong></p>
+      <p>Score total : <strong>${gOk}/${gTot}</strong> (${p}%)</p>
+    </div>
+    <p class="foot">Généré automatiquement à partir de l’exercice Exo3.</p>
+    </body></html>`;
+    return header + blocks.join("\n") + footer;
+     }
+
+  // ---------- Chargement JSON ----------
+  async function loadJson(){
+    try{
+      const r=await fetch(FILE,{cache:"no-store"});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      let t=await r.text(); t=t.replace(/^\uFEFF/,"");
+      data=JSON.parse(t);
+      if(!Array.isArray(data)||!data.length) throw new Error("Format invalide");
+    }catch(e){
+      console.error(e);
+      data=[{consigne:"Fallback : JSON non chargé.",phrase:[{mot:"Exemple",fonction:"CVD"},{mot:"test",fonction:""}]}];
+    }
+  }
+
+  // ---------- Affichage d’une phrase ----------
+  function buildPhrase(it){
+    elC.textContent="Consigne : "+it.consigne;
+    elW.innerHTML="";
+    it.phrase.forEach((t,i)=>{
+      const s=document.createElement("span");
+      s.className="tok";
+      s.textContent=t.mot;
+      s.dataset.state="";
+      s.dataset.idx=i.toString();
+      s.onclick=(e)=>onClickToken(e,s);
+      elW.appendChild(s);
+    });
+    scLine.textContent="";
+    locked=false;
+    attempts=0;         // reset tentatives pour cette phrase
+    anchorIndex=null;   // nouvelle phrase → réinitialiser l’ancre
+  }
+
+  // ---------- Aides sélection ----------
+  function clearSelection(){ $$(".tok.sel",elW).forEach(el=>el.classList.remove("sel")); }
+  function selectionExists(){ return $$(".tok.sel",elW).length>0; }
+  function selectRange(a,b){
+    const min=Math.min(a,b), max=Math.max(a,b);
+    clearSelection();
+    for(let k=min;k<=max;k++){
+      const t=document.querySelector(`.tok[data-idx="${k}"]`);
+      if(t) t.classList.add("sel");
+    }
+  }
+  function setSelectionState(state){ $$(".tok.sel",elW).forEach(el=> el.dataset.state=state); }
+  function cycleOne(el){
+    const cur=el.dataset.state||"", pos=CYCLE.indexOf(cur);
+    el.dataset.state=CYCLE[(pos+1)%CYCLE.length];
+  }
+  function cycleSelectionOnce(){ $$(".tok.sel",elW).forEach(cycleOne); }
+
+  // ---------- Logique de clic (multi-sélection à la Exo2) ----------
+  function onClickToken(e, el){
+    if(locked) return;
+
+    const i  = parseInt(el.dataset.idx,10);
+    const isModifier = (e.ctrlKey||ctrl) || (e.shiftKey||shift) || arrow;
+
+    const hasSel = selectionExists();
+    const inSel  = el.classList.contains("sel");
+
+    if(isModifier){
+      // Si pas d’ancre : on fixe l’ancre sur ce mot (mise en CVD)
+      if(anchorIndex===null){
+        anchorIndex = i;
+        clearSelection();
+        el.classList.add("sel");
+        el.dataset.state = "CVD"; // 1er état du cycle
+      }else{
+        // Plage inclusive [ancre..i], tout en CVD (pas de cycle)
+        selectRange(anchorIndex, i);
+        setSelectionState("CVD");
+      }
+      return; // important : pas de cycle ici
+    }
+
+    // Clic sans touche
+    if(hasSel){
+      if(inSel){
+        // Clic dans la sélection → cycle tout le groupe
+        cycleSelectionOnce();
+      }else{
+        // Clic hors sélection → on repart sur ce mot seul en CVD
+        clearSelection();
+        el.classList.add("sel");
+        el.dataset.state = "CVD";
+        anchorIndex = i;
+      }
+    }else{
+      // Pas de sélection → ce mot seul en CVD et devient l’ancre
+      el.classList.add("sel");
+      el.dataset.state = "CVD";
+      anchorIndex = i;
+    }
+  }
+
+  // ---------- Clavier ----------
+  document.addEventListener("keydown",(e)=>{
+    if(e.key==="Control") ctrl=true;
+    if(e.key==="Shift")   shift=true;
+    if(e.key.startsWith("Arrow")) arrow=true;
+
+    // Espace = désélection du groupe (seulement)
+    if(e.code==="Space"){
+      e.preventDefault();
+      clearSelection();
+      anchorIndex=null;
+    }
+  });
+  document.addEventListener("keyup",(e)=>{
+    if(e.key==="Control") ctrl=false;
+    if(e.key==="Shift")   shift=false;
+    if(e.key.startsWith("Arrow")) arrow=false;
+    // Aucun cycle au relâchement → évite l’ancien comportement incorrect
+  });
+
+// === QUIZ BONUS ===
+const qbBackdrop = document.getElementById("quizBackdrop");
+const qbQ        = document.getElementById("quizQuestion");
+const qbOpts     = document.getElementById("quizOptions");
+const qbBtnSkip  = document.getElementById("quizSkip");
+const qbBtnOK    = document.getElementById("quizValidate");
+
+function closeBonus(){
+  qbBackdrop.classList.remove("show");
+  qbBackdrop.setAttribute("aria-hidden","true");
+}
+function maybeOpenBonus(){
+  const item = data[idx];
+  if (!item || !item.bonus || item._bonusDone) return;
+  qbQ.textContent = item.bonus.question || "(bonus)";
+  qbOpts.innerHTML = "";
+  const opts = (Array.isArray(item.bonus.options) ? item.bonus.options : []).slice(0,4);
+  if (opts.length < 2) return;
+  opts.forEach((o, i) => {
+    const id = `qb_opt_${i}`;
+    const label = document.createElement("label");
+    label.dataset.correct = o.correct ? "1" : "0";
+    label.innerHTML = `<input type="checkbox" id="${id}"><span>${(o.text||"").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</span>`;
+    qbOpts.appendChild(label);
+  });
+  qbBackdrop.classList.add("show");
+  qbBackdrop.setAttribute("aria-hidden","false");
+}
+qbBtnSkip?.addEventListener("click", closeBonus);
+qbBackdrop?.addEventListener("click", (e)=>{ if(e.target===qbBackdrop) closeBonus(); });
+
+qbBtnOK?.addEventListener("click", () => {
+  const item = data[idx];
+  if (!item || !item.bonus || item._bonusDone) { closeBonus(); return; }
+
+  const labels = Array.from(qbOpts.querySelectorAll("label"));
+  const corrects = labels.filter(l => l.dataset.correct === "1");
+  const correctCount = corrects.length;
+
+  let gained = 0;
+  labels.forEach(l => {
+    const cb = l.querySelector('input[type="checkbox"]');
+    if (l.dataset.correct === "1" && cb.checked) gained += 1; // +1 par bonne coche
+  });
+
+  // Affichage score phrase (+bonus)
+  if (gained > 0) {
+    const txt = scLine.textContent || "";
+    const suffix = ` +${gained} bonus`;
+    if (!txt.includes("bonus")) scLine.textContent = txt + suffix;
+  }
+
+  // Score global (OK += gained ; TOT += nb de bonnes réponses possibles)
+  const gOk  = parseInt(localStorage.getItem(TOTAL_OK)||"0",10);
+  const gTot = parseInt(localStorage.getItem(TOTAL_TOT)||"0",10);
+  localStorage.setItem(TOTAL_OK,  String(gOk  + gained));
+  localStorage.setItem(TOTAL_TOT, String(gTot + correctCount));
+  if (typeof updateCumul === "function") updateCumul();
+
+  item._bonusDone = true;
+  closeBonus();
+});
+
+
+  // ---------- Validation / Navigation / Scores ----------
+  function validate(){
+    if(locked)return;
+
+    const it=data[idx];
+    const toks=$$(".tok",elW);
+
+    let ok=0, tot=0;
+    const wrongs=[];
+
+    toks.forEach((el,j)=>{
+      const attendu=it.phrase[j]?.fonction||"";
+      if(attendu===""){el.classList.remove("ok","ko");return;} // ignoré au score
+      tot++;
+      const eleve=el.dataset.state||"";
+      el.classList.remove("ok","ko");
+      if(attendu===eleve){el.classList.add("ok");ok++;}
+      else{
+        el.classList.add("ko");
+        wrongs.push({
+          index:j,
+          mot:it.phrase[j]?.mot ?? "",
+          attendu:attendu,
+          eleve:eleve||"(vide)"
+        });
+      }
+    });
+
+    // Pénalité d’essais successifs sur la même phrase
+    const baseScore=ok;
+    const penalty=attempts;
+    const finalScore=Math.max(0, baseScore - penalty);
+    attempts++;
+
+    scLine.textContent=`Score phrase : ${finalScore}/${tot} (−${penalty} pénalité${penalty>1?"s":""})`;
+
+    // Score page
+    localStorage.setItem(PAGE_KEY, finalScore.toString());
+
+    // Score global
+    const gOk=parseInt(localStorage.getItem(TOTAL_OK)||"0",10);
+    const gTot=parseInt(localStorage.getItem(TOTAL_TOT)||"0",10);
+    localStorage.setItem(TOTAL_OK,String(gOk+finalScore));
+    localStorage.setItem(TOTAL_TOT,String(gTot+tot));
+    updateCumul();
+
+    // Journaliser la tentative
+    wrongLog.push({
+      file: FILE,
+      phraseIndex: idx,
+      attempt: attempts, // après incrément
+      consigne: it.consigne,
+      wrong: wrongs
+    });
+    saveWrongLog();
+
+    // Si dernière phrase → demander prénom + télécharger rapport HTML
+    const isLast = (idx === data.length-1);
+    if(isLast){
+      const prenom = (prompt("Prénom de l’élève (pour nommer le fichier) :") || "Eleve").trim() || "Eleve";
+      const reportHTML = renderReportHTML(prenom);
+      const exNum = extractExerciseNumber(FILE);
+      downloadHTML(`${prenom}-Exo3exo${exNum}.html`, reportHTML);
+    }
+
+    locked=true;
+    maybeOpenBonus();
+
+  }
+
+  function retry(){
+    $$(".tok",elW).forEach(el=>{
+      el.dataset.state="";
+      el.classList.remove("ok","ko","sel");
+    });
+    locked=false;
+    // attempts n'est pas remis à 0 (pénalité maintenue sur la même phrase)
+    anchorIndex=null;
+  }
+
+  function next(){
+    if(idx<data.length-1){ idx++; buildPhrase(data[idx]); }
+    else location.href="index.html";
+  }
+
+  function updateCumul(){
+    const page=localStorage.getItem(PAGE_KEY)||"0";
+    const ok=parseInt(localStorage.getItem(TOTAL_OK)||"0",10);
+    const tot=parseInt(localStorage.getItem(TOTAL_TOT)||"0",10);
+    const p=tot?Math.round(100*ok/tot):0;
+    scCum.textContent=`Score page : ${page} | Score total : ${ok}/${tot} (${p}%)`;
+  }
+
+  // Bind
+  bV.onclick=validate;
+  bR.onclick=retry;
+  bN.onclick=next;
+  bH.onclick=()=>location.href="index.html";
+  const bX = document.getElementById("btnReset");
+    if (bX) bX.onclick = doReset;
+
+
+  // Init
+  (async()=>{
+    loadWrongLog();
+    await loadJson();
+    buildPhrase(data[0]);
+    updateCumul();
+  })();
+})();
+</script>
+
+<!-- Fenêtre Quiz Bonus -->
+<div id="quizBackdrop" class="modal-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="quizTitle">
+    <header id="quizTitle">Question bonus</header>
+    <div id="quizQuestion" class="row"></div>
+    <div id="quizOptions" class="opts"></div>
+    <div class="actions">
+      <button id="quizSkip" class="btn">Passer</button>
+      <button id="quizValidate" class="btn primary">Valider le bonus</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

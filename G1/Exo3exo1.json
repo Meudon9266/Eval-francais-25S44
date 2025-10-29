@@ -1,0 +1,262 @@
+[
+  {
+    "consigne": "Indique le CVD ou le CVI ou l'attribut du sujet (AS) dans les phrases suivantes.",
+    "phrase": [
+      {
+        "mot": "Les",
+        "fonction": ""
+      },
+      {
+        "mot": "élèves",
+        "fonction": ""
+      },
+      {
+        "mot": ",",
+        "fonction": ""
+      },
+      {
+        "mot": "pour",
+        "fonction": ""
+      },
+      {
+        "mot": "une",
+        "fonction": ""
+      },
+      {
+        "mot": "fois",
+        "fonction": ""
+      },
+      {
+        "mot": ",",
+        "fonction": ""
+      },
+      {
+        "mot": "restent",
+        "fonction": ""
+      },
+      {
+        "mot": "silencieux",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Laura",
+        "fonction": ""
+      },
+      {
+        "mot": "distribue",
+        "fonction": ""
+      },
+      {
+        "mot": "les",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "cahiers",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "de",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "sciences",
+        "fonction": "CVD"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "Identifie Les fonctions CVD-CVI ou AS dans ces phrases (pas les CP).",
+    "phrase": [
+      {
+        "mot": "Ma",
+        "fonction": ""
+      },
+      {
+        "mot": "voisine",
+        "fonction": ""
+      },
+      {
+        "mot": "parle",
+        "fonction": ""
+      },
+      {
+        "mot": "de",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "son",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "week",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "end",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "à",
+        "fonction": ""
+      },
+      {
+        "mot": "la",
+        "fonction": ""
+      },
+      {
+        "mot": "mer",
+        "fonction": ""
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "L’oncle",
+        "fonction": ""
+      },
+      {
+        "mot": "de",
+        "fonction": ""
+      },
+      {
+        "mot": "Laura",
+        "fonction": ""
+      },
+      {
+        "mot": "écrit",
+        "fonction": ""
+      },
+      {
+        "mot": "à",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "tous",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "ses",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "amis",
+        "fonction": "CVI"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "Identifie la fonction du groupe grammatical derrière le verbe",
+    "phrase": [
+      {
+        "mot": "Les",
+        "fonction": ""
+      },
+      {
+        "mot": "animaux",
+        "fonction": ""
+      },
+      {
+        "mot": "de",
+        "fonction": ""
+      },
+      {
+        "mot": "la",
+        "fonction": ""
+      },
+      {
+        "mot": "forêt",
+        "fonction": ""
+      },
+      {
+        "mot": "paraissent",
+        "fonction": ""
+      },
+      {
+        "mot": "plus",
+        "fonction": "AS"
+      },
+      {
+        "mot": "sereins",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "Trouve 3 CVD / CVI / AS dans ces deux phrases",
+    "phrase": [
+      {
+        "mot": "Calogéro",
+        "fonction": ""
+      },
+      {
+        "mot": "est",
+        "fonction": ""
+      },
+      {
+        "mot": "un",
+        "fonction": "AS"
+      },
+      {
+        "mot": "très",
+        "fonction": "AS"
+      },
+      {
+        "mot": "bon",
+        "fonction": "AS"
+      },
+      {
+        "mot": "chanteur",
+        "fonction": "AS"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Le",
+        "fonction": ""
+      },
+      {
+        "mot": "serveur",
+        "fonction": ""
+      },
+      {
+        "mot": "nous",
+        "fonction": ""
+      },
+      {
+        "mot": "amène",
+        "fonction": ""
+      },
+      {
+        "mot": "trois",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "cafés",
+        "fonction": "CVD"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  }
+]

@@ -1,0 +1,54 @@
+[
+  {
+    "consigne": "Trouve le sujet, le CVD et le CP.",
+    "phrase": [
+      {"mot":"Les","fonction":"S"},
+      {"mot":"promeneurs","fonction":"S"},
+      {"mot":"ont","fonction":""},
+      {"mot":"enfin","fonction":""},
+      {"mot":"retrouvé","fonction":""},
+      {"mot":"leur","fonction":"CVD"},
+      {"mot":"chemin","fonction":"CVD"},
+      {"mot":"après","fonction":"CP"},
+      {"mot":"plusieurs","fonction":"CP"},
+      {"mot":"heures","fonction":"CP"},
+      {"mot":"d’errance.","fonction":"CP"}
+    ]
+  },
+  {
+    "consigne": "Identifie le sujet et l’attribut du sujet.",
+    "phrase": [
+      {"mot":"Cet","fonction":"S"},
+      {"mot":"homme","fonction":"S"},
+      {"mot":"était","fonction":""},
+      {"mot":"un","fonction":"AS"},
+      {"mot":"scientifique","fonction":"AS"},
+      {"mot":"reconnu","fonction":"AS"}
+    ]
+  },
+  {
+    "consigne": "Trouve le sujet, le CVD et le CVI.",
+    "phrase": [
+      {"mot":"Tu","fonction":"S"},
+      {"mot":"expliqueras","fonction":""},
+      {"mot":"cela","fonction":"CVD"},
+      {"mot":"à","fonction":"CVI"},
+      {"mot":"tes","fonction":"CVI"},
+      {"mot":"parents.","fonction":"CVI"}
+    ]
+  },
+  {
+    "consigne": "Trouve le sujet, le CVD et le CP.",
+    "phrase": [
+      {"mot":"Aujourd’hui,","fonction":"CP"},
+      {"mot":"nous","fonction":"S"},
+      {"mot":"suivrons","fonction":""},
+      {"mot":"des","fonction":"CVD"},
+      {"mot":"cours","fonction":"CVD"},
+      {"mot":"à","fonction":"CP"},
+      {"mot":"l’extérieur","fonction":"CP"},
+      {"mot":"de","fonction":"CP"},
+      {"mot":"l’école.","fonction":"CP"}
+    ]
+  }
+]

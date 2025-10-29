@@ -1,0 +1,579 @@
+[
+  {
+    "consigne": "Trouve 3 groupes CVD, CVI ou CP",
+    "phrase": [
+      {
+        "mot": "Shelly",
+        "fonction": ""
+      },
+      {
+        "mot": "reçoit",
+        "fonction": ""
+      },
+      {
+        "mot": "un",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "message",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "d’alerte",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "sur",
+        "fonction": "CP"
+      },
+      {
+        "mot": "son",
+        "fonction": "CP"
+      },
+      {
+        "mot": "bracelet",
+        "fonction": "CP"
+      },
+      {
+        "mot": "ce",
+        "fonction": "CP"
+      },
+      {
+        "mot": "matin",
+        "fonction": "CP"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "Trouve 5 groupes CVD ou CP",
+    "phrase": [
+      {
+        "mot": "Elle",
+        "fonction": ""
+      },
+      {
+        "mot": "décide",
+        "fonction": ""
+      },
+      {
+        "mot": "de",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "rejoindre",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "Colt",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "au",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "Canyon",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "de",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "Cristal",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "pour",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "comprendre",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "la",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "situation",
+        "fonction": "CVI"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Sa",
+        "fonction": ""
+      },
+      {
+        "mot": "moto",
+        "fonction": ""
+      },
+      {
+        "mot": "démarre",
+        "fonction": ""
+      },
+      {
+        "mot": "dans",
+        "fonction": "CP"
+      },
+      {
+        "mot": "un",
+        "fonction": "CP"
+      },
+      {
+        "mot": "nuage",
+        "fonction": "CP"
+      },
+      {
+        "mot": "de",
+        "fonction": "CP"
+      },
+      {
+        "mot": "poussière",
+        "fonction": "CP"
+      },
+      {
+        "mot": "et",
+        "fonction": ""
+      },
+      {
+        "mot": "traverse",
+        "fonction": ""
+      },
+      {
+        "mot": "le",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "désert",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "à",
+        "fonction": "CP"
+      },
+      {
+        "mot": "toute",
+        "fonction": "CP"
+      },
+      {
+        "mot": "vitesse",
+        "fonction": "CP"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "Trouve 6 groupes CVD, CVI ou CP",
+    "phrase": [
+      {
+        "mot": "Colt",
+        "fonction": ""
+      },
+      {
+        "mot": "attend",
+        "fonction": ""
+      },
+      {
+        "mot": "Shelly",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "près",
+        "fonction": "CP"
+      },
+      {
+        "mot": "d’un",
+        "fonction": "CP"
+      },
+      {
+        "mot": "rocher",
+        "fonction": "CP"
+      },
+      {
+        "mot": "et",
+        "fonction": ""
+      },
+      {
+        "mot": "lui",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "montre",
+        "fonction": ""
+      },
+      {
+        "mot": "la",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "direction",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "du",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "canyon",
+        "fonction": "CVD"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Les",
+        "fonction": ""
+      },
+      {
+        "mot": "deux",
+        "fonction": ""
+      },
+      {
+        "mot": "brawlers",
+        "fonction": ""
+      },
+      {
+        "mot": "aperçoivent",
+        "fonction": ""
+      },
+      {
+        "mot": "des",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "traces",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "de",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "pas",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "mécaniques",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "dans",
+        "fonction": "CP"
+      },
+      {
+        "mot": "le",
+        "fonction": "CP"
+      },
+      {
+        "mot": "sable",
+        "fonction": "CP"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "Trouve 6 groupes CVD, CVI ou CP",
+    "phrase": [
+      {
+        "mot": "Robo",
+        "fonction": ""
+      },
+      {
+        "mot": "Mike",
+        "fonction": ""
+      },
+      {
+        "mot": "a",
+        "fonction": ""
+      },
+      {
+        "mot": "volé",
+        "fonction": ""
+      },
+      {
+        "mot": "les",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "cristaux",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "du",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "canyon",
+        "fonction": "CVD"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Shelly",
+        "fonction": ""
+      },
+      {
+        "mot": "saisit",
+        "fonction": ""
+      },
+      {
+        "mot": "son",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "fusil",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "et",
+        "fonction": ""
+      },
+      {
+        "mot": "prépare",
+        "fonction": ""
+      },
+      {
+        "mot": "une",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "attaque",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "rapide",
+        "fonction": "CVD"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Colt",
+        "fonction": ""
+      },
+      {
+        "mot": "recharge",
+        "fonction": ""
+      },
+      {
+        "mot": "ses",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "pistolets",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "et",
+        "fonction": ""
+      },
+      {
+        "mot": "observe",
+        "fonction": ""
+      },
+      {
+        "mot": "la",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "falaise",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "d’en",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "face",
+        "fonction": "CVD"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Jessie",
+        "fonction": ""
+      },
+      {
+        "mot": "rejoint",
+        "fonction": ""
+      },
+      {
+        "mot": "ses",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "amis",
+        "fonction": "CVD"
+      }
+    ]
+  },
+  {
+    "consigne": "Trouve 6 groupes CVD, CVI ou CP",
+    "phrase": [
+      {
+        "mot": "Le",
+        "fonction": ""
+      },
+      {
+        "mot": "groupe",
+        "fonction": ""
+      },
+      {
+        "mot": "avance",
+        "fonction": ""
+      },
+      {
+        "mot": "prudemment",
+        "fonction": "CP"
+      },
+      {
+        "mot": "entre",
+        "fonction": "CP"
+      },
+      {
+        "mot": "les",
+        "fonction": "CP"
+      },
+      {
+        "mot": "parois",
+        "fonction": "CP"
+      },
+      {
+        "mot": "étroites",
+        "fonction": "CP"
+      },
+      {
+        "mot": "du",
+        "fonction": "CP"
+      },
+      {
+        "mot": "canyon",
+        "fonction": "CP"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Un",
+        "fonction": ""
+      },
+      {
+        "mot": "bruit",
+        "fonction": ""
+      },
+      {
+        "mot": "métallique",
+        "fonction": ""
+      },
+      {
+        "mot": "retentit",
+        "fonction": ""
+      },
+      {
+        "mot": "soudain",
+        "fonction": "CP"
+      },
+      {
+        "mot": "au",
+        "fonction": "CP"
+      },
+      {
+        "mot": "sommet",
+        "fonction": "CP"
+      },
+      {
+        "mot": "d’une",
+        "fonction": "CP"
+      },
+      {
+        "mot": "dune",
+        "fonction": "CP"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Le",
+        "fonction": ""
+      },
+      {
+        "mot": "robot",
+        "fonction": ""
+      },
+      {
+        "mot": "de",
+        "fonction": ""
+      },
+      {
+        "mot": "Robo",
+        "fonction": ""
+      },
+      {
+        "mot": "Mike",
+        "fonction": ""
+      },
+      {
+        "mot": "apparaît",
+        "fonction": ""
+      },
+      {
+        "mot": "et",
+        "fonction": ""
+      },
+      {
+        "mot": "fonce",
+        "fonction": ""
+      },
+      {
+        "mot": "vers",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "eux",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "en",
+        "fonction": "CP"
+      },
+      {
+        "mot": "soulevant",
+        "fonction": "CP"
+      },
+      {
+        "mot": "la",
+        "fonction": "CP"
+      },
+      {
+        "mot": "poussière",
+        "fonction": "CP"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  }
+]

@@ -1,0 +1,111 @@
+[
+  {
+    "consigne": "Indique 9 groupes grammaticaux qui sont sujet ou CVD ou CVI ou AS ou CP",
+    "phrase": [
+      {
+        "mot": "Le",
+        "fonction": "S"
+      },
+      {
+        "mot": "chien",
+        "fonction": "S"
+      },
+      {
+        "mot": "poursuit",
+        "fonction": ""
+      },
+      {
+        "mot": "le",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "ballon",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "en",
+        "fonction": "CP"
+      },
+      {
+        "mot": "aboyant",
+        "fonction": "CP"
+      },
+      {
+        "mot": "bruyamment",
+        "fonction": "CP"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Mon",
+        "fonction": "S"
+      },
+      {
+        "mot": "frère",
+        "fonction": "S"
+      },
+      {
+        "mot": "est",
+        "fonction": ""
+      },
+      {
+        "mot": "content",
+        "fonction": "AS"
+      },
+      {
+        "mot": "aujourd",
+        "fonction": "CP"
+      },
+      {
+        "mot": "'",
+        "fonction": "CP"
+      },
+      {
+        "mot": "hui",
+        "fonction": "CP"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Les",
+        "fonction": "S"
+      },
+      {
+        "mot": "enfants",
+        "fonction": "S"
+      },
+      {
+        "mot": "lisent",
+        "fonction": ""
+      },
+      {
+        "mot": "un",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "livre",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "avec",
+        "fonction": "CP"
+      },
+      {
+        "mot": "plaisir",
+        "fonction": "CP"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  },
+  {
+    "consigne": "",
+    "phrase": []
+  }
+]

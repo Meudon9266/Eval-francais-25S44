@@ -1,0 +1,67 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "ref": "non valide",
+      "link": "exo1.html?file=exoPrep1.json",
+      "desc": "Prépositions de lieu (8 phrases)",
+      "stars": 2
+    },
+    {
+      "id": 2,
+      "ref": "Exo2exo1",
+      "link": "Exo2.html?file=Exo2exo1.json",
+      "desc": "trouve les fonctions des groupes nominaux",
+      "stars": 1
+    },
+    {
+      "id": 3,
+      "ref": "Exo2exo2",
+      "link": "Exo2.html?file=Exo2exo2.json",
+      "desc": "trouve les fonctions des groupes nominaux",
+      "stars": 2
+    },
+    {
+      "id": 5,
+      "ref": "Exo2exo4 (Brawlers)",
+      "link": "Exo2.html?file=Exo2exo4.json",
+      "desc": "Trouve les fonctions des groupes nominaux",
+      "stars": 1
+    },
+    {
+      "id": 6,
+      "ref": "Exo2exo5 (exo de classe)",
+      "link": "Exo2.html?file=Exo2exo5.json",
+      "desc": "Trouve les fonctions des groupes nominaux",
+      "stars": 1
+    },
+    {
+      "id": 9,
+      "ref": "Exo2exo6 (Charivari Ceinture Bleue)",
+      "link": "Exo2.html?file=Exo2exo6.json",
+      "desc": "Trouve les fonctions des groupes nominaux",
+      "stars": 1
+    },
+    {
+      "id": 4,
+      "ref": "Exo3exo1",
+      "link": "Exo3.html?file=Exo3exo1.json",
+      "desc": "CVD ou CVI ou Attribut ?",
+      "stars": 1
+    },
+    {
+      "id": 7,
+      "ref": "Exo3exo2 (Exo de Classe Numerique)",
+      "link": "Exo3.html?file=Exo3exo2.json",
+      "desc": "Souligne les attributs du sujet",
+      "stars": 2
+    },
+    {
+      "id": 8,
+      "ref": "Exo3exo3 (Exo de Classe Numerique)",
+      "link": "Exo3.html?file=Exo3exo3.json",
+      "desc": "Souligne les attributs du sujet",
+      "stars": 2
+    }
+  ]
+}

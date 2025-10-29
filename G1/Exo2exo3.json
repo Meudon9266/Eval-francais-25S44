@@ -1,0 +1,107 @@
+[
+  {
+    "consigne": "Consigne",
+    "phrase": [
+      {
+        "mot": "Shelly",
+        "fonction": "S"
+      },
+      {
+        "mot": "reçoit",
+        "fonction": ""
+      },
+      {
+        "mot": "un",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "message",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "d’alerte",
+        "fonction": "CVD"
+      },
+      {
+        "mot": "sur",
+        "fonction": "CP"
+      },
+      {
+        "mot": "son",
+        "fonction": "CP"
+      },
+      {
+        "mot": "bracelet",
+        "fonction": "CP"
+      },
+      {
+        "mot": "ce",
+        "fonction": "CP"
+      },
+      {
+        "mot": "matin",
+        "fonction": "CP"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      },
+      {
+        "mot": "Elle",
+        "fonction": "S"
+      },
+      {
+        "mot": "décide",
+        "fonction": ""
+      },
+      {
+        "mot": "de",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "rejoindre",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "Colt",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "au",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "Canyon",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "de",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "Cristal",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "pour",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "comprendre",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "la",
+        "fonction": "CVI"
+      },
+      {
+        "mot": "situation",
+        "fonction": "CVI"
+      },
+      {
+        "mot": ".",
+        "fonction": ""
+      }
+    ]
+  }
+]

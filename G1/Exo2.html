@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Exo2 – Groupes nominaux interactif</title>
+<style>
+  :root{
+    --S:#CFF7D1; --CVD:#FDE9B8; --CVI:#FCD7D2; --AS:#EBDDFF; --CP:#D6ECFE;
+    --UNK:#ffffff; --txt:#1f2937;
+  }
+  body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#f7f7fb;color:var(--txt);}
+  .wrap{max-width:980px;margin:24px auto;padding:0 12px;}
+  h1{margin:0 0 8px;font-size:1.2rem;}
+  .headbar{display:flex;gap:10px;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;margin:10px 0 18px;}
+  .score-cumul{font-weight:800;}
+  .btn{appearance:none;border:1px solid #d1d5db;background:#fff;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700;}
+  .btn:hover{background:#f3f4f6;}
+  .btn.primary{background:#2563eb;color:#fff;border-color:#2563eb;}
+  .btn.primary:disabled{opacity:.5;cursor:not-allowed;}
+  .btn.ghost{background:#fff;border-color:#e5e7eb;}
+  .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px;box-shadow:0 6px 16px rgba(0,0,0,.04);}
+  .consigne{margin:0 0 8px;font-weight:800;color:#b91c1c;font-size:1.1rem;}
+  .phrase-wrap{margin:10px 0 6px;min-height:120px;}
+  .tok{
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:6px 10px;margin:6px 4px;border-radius:12px;
+    background:#fff;border:2px solid transparent;font-weight:800;
+    user-select:none;cursor:pointer;position:relative;
+    transition:background-color .12s,border-color .12s,color .12s;
+    color:var(--txt);
+  }
+  .tok.sel{outline:3px dashed #60a5fa;outline-offset:2px;}
+  .tok[data-state="S"]   {background:var(--S);border-color:#86efac;}
+  .tok[data-state="CVD"] {background:var(--CVD);border-color:#fbbf24;}
+  .tok[data-state="CVI"] {background:var(--CVI);border-color:#fda4af;}
+  .tok[data-state="AS"]  {background:var(--AS);border-color:#c4b5fd;}
+  .tok[data-state="CP"]  {background:var(--CP);border-color:#93c5fd;color:var(--CP);} /* texte invisible */
+  .tok[data-state=""]    {background:transparent;border-color:transparent;}
+  .tok::after{
+    content:attr(data-state);
+    position:absolute;right:6px;bottom:-12px;
+    font-size:.95em;font-weight:900;border-radius:4px;padding:1px 4px;pointer-events:none;opacity:.95;
+  }
+  .tok[data-state="S"]::after   {background:var(--S);color:#16a34a;}
+  .tok[data-state="CVD"]::after {background:var(--CVD);color:#d97706;}
+  .tok[data-state="CVI"]::after {background:var(--CVI);color:#e11d48;}
+  .tok[data-state="AS"]::after  {background:var(--AS);color:#6d28d9;}
+  .tok[data-state="CP"]::after  {background:var(--CP);color:#1d4ed8;}
+  .tok[data-state=""]::after    {content:"";}
+  .tok.ok{box-shadow:0 0 0 3px rgba(16,185,129,.35) inset;}
+  .tok.ko{box-shadow:0 0 0 3px rgba(239,68,68,.35) inset;}
+  .actions{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap;}
+  .scoreline{font-weight:900;}
+  .toggle{margin-left:auto;display:flex;align-items:center;gap:6px;}
+  .toggle input{width:18px;height:18px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="headbar">
+    <button id="btnAccueil" class="btn">Accueil</button>
+    <div class="toggle">
+      <label for="multiTouch" class="small">Multi-sélection tactile</label>
+      <input type="checkbox" id="multiTouch">
+    </div>
+    <div class="score-cumul" id="scoreCumul">Score cumulé : 0/0 (0%)</div>
+  </div>
+
+  <h1>Groupes nominaux : Sujet • CVD • CVI • AS • CP</h1>
+
+  <div class="card">
+    <p class="consigne" id="consigneDyn">Consigne : chargement…</p>
+    <div id="workspace" class="phrase-wrap"></div>
+
+    <div class="actions">
+      <button id="btnValider" class="btn primary">Valider</button>
+      <button id="btnReessayer" class="btn ghost">Réessayer</button>
+      <button id="btnSuivant" class="btn">Phrase suivante →</button>
+      <span class="scoreline" id="scoreLine"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $  = (s,root=document)=>root.querySelector(s);
+  const $$ = (s,root=document)=>Array.from(root.querySelectorAll(s));
+
+  // ----- Paramètres -----
+  const CYCLE = ["S","CVD","CVI","AS","CP",""]; // ordre demandé
+  let ctrl=false, shift=false, arrow=false;     // touches complémentaires enfoncées
+  let anchorIndex = null;                       // index du "premier mot" (ancre)
+
+  const qs = new URLSearchParams(location.search);
+  const FILE = qs.get("file") || "Exo2exo1.json";
+  const K_OK="Exo2_cum_ok", K_TOTAL="Exo2_cum_total", K_FONT="Exo2_fontSize";
+
+  // ----- Réfs UI attendues -----
+  const elW=$("#workspace"), elC=$("#consigneDyn");
+  const scCum=$("#scoreCumul"), scLine=$("#scoreLine");
+  const bV=$("#btnValider"), bR=$("#btnReessayer"), bN=$("#btnSuivant"), bH=$("#btnAccueil");
+  const multi=$("#multiTouch"); // optionnel tablette
+  const bPlus=$("#btnPlus"), bMoins=$("#btnMoins");
+
+  // ----- État -----
+  let data=[], idx=0, locked=false;
+
+  // ----- Police (si boutons +/− présents) -----
+  let fontSize = parseFloat(localStorage.getItem(K_FONT)) || 1.0;
+  function applyFontSize(){
+    document.querySelectorAll('.tok, .consigne').forEach(el=>{
+      el.style.fontSize = `${fontSize}em`;
+    });
+    localStorage.setItem(K_FONT, String(fontSize));
+  }
+  if (bPlus)  bPlus.onclick  = ()=>{ fontSize=Math.min(fontSize+0.1,2.0); applyFontSize(); };
+  if (bMoins) bMoins.onclick = ()=>{ fontSize=Math.max(fontSize-0.1,0.6); applyFontSize(); };
+
+  // ----- Score cumulé -----
+  if(localStorage.getItem(K_OK)===null)   localStorage.setItem(K_OK,"0");
+  if(localStorage.getItem(K_TOTAL)===null)localStorage.setItem(K_TOTAL,"0");
+  updateCumul();
+  if (bH) bH.onclick=()=>location.href="index.html";
+
+  // ----- Chargement JSON -----
+  async function loadJson(){
+    try{
+      const r=await fetch(new URL(FILE,location.href),{cache:"no-store"});
+      if(!r.ok) throw new Error(`HTTP ${r.status}`);
+      let t=await r.text(); t=t.replace(/^\uFEFF/,"");
+      const parsed=JSON.parse(t);
+      if(!Array.isArray(parsed)||!parsed.length) throw new Error("JSON invalide");
+      data=parsed;
+    }catch(e){
+      console.error(e);
+      data=[{consigne:"Fallback : JSON non chargé.",phrase:[{mot:"Exemple",fonction:"S"},{mot:"de",fonction:""},{mot:"phrase.",fonction:""}]}];
+    }
+  }
+
+  // ----- Affichage d’une phrase -----
+  function buildPhrase(item){
+    elC.textContent="Consigne : "+item.consigne;
+    elW.innerHTML="";
+    item.phrase.forEach((t,i)=>{
+      const s=document.createElement("span");
+      s.className="tok";
+      s.textContent=t.mot;
+      s.dataset.state="";
+      s.dataset.idx=String(i);
+      s.onclick=(e)=>onClickToken(e,s);
+      elW.appendChild(s);
+    });
+    scLine.textContent="";
+    locked=false;
+    anchorIndex=null; // nouvelle phrase → on réinitialise l’ancre
+    bN.textContent=(idx<data.length-1)?"Phrase suivante →":"Terminer → Accueil";
+    applyFontSize();
+  }
+
+  // ----- Helpers de sélection -----
+  function clearSelection(){ $$(".tok.sel",elW).forEach(el=>el.classList.remove("sel")); }
+  function selectRange(a,b){
+    const min=Math.min(a,b), max=Math.max(a,b);
+    clearSelection();
+    for(let k=min;k<=max;k++){
+      const t=document.querySelector(`.tok[data-idx="${k}"]`);
+      if(t) t.classList.add("sel");
+    }
+  }
+  function selectionExists(){ return $$(".tok.sel",elW).length>0; }
+  function setSelectionState(state){ $$(".tok.sel",elW).forEach(el=> el.dataset.state=state); }
+  function cycleOne(el){
+    const cur=el.dataset.state||"", pos=CYCLE.indexOf(cur);
+    el.dataset.state=CYCLE[(pos+1)%CYCLE.length];
+  }
+  function cycleSelectionOnce(){ $$(".tok.sel",elW).forEach(cycleOne); }
+
+  // ----- Logique de clic -----
+    function onClickToken(e, el){
+    if (locked) return;
+
+    const i  = parseInt(el.dataset.idx, 10);
+    const isTouchMulti = (multi && multi.checked) || false;
+    const isModifier   = (e.ctrlKey || ctrl) || (e.shiftKey || shift) || arrow || isTouchMulti;
+
+    const hasSel = $$(".tok.sel", elW).length > 0;
+    const clickedIsInSel = el.classList.contains("sel");
+
+    if (isModifier) {
+        // --- Sélection (aucun cycle) ---
+        if (anchorIndex === null) {
+        // Première ancre si besoin
+        anchorIndex = i;
+        clearSelection();
+        el.classList.add("sel");
+        el.dataset.state = "S"; // mise en S du premier mot sélectionné
+        } else {
+        // Plage inclusive [ancre..i]
+        selectRange(anchorIndex, i);
+        setSelectionState("S"); // tout le groupe en S (sans avancer l’ancre)
+        }
+        return; // IMPORTANT : pas de cycle ici
+    }
+
+    // --- Clic sans touche ---
+    if (hasSel) {
+        if (clickedIsInSel) {
+        // Clic dans le groupe sélectionné → cycle TOUT le groupe
+        cycleSelectionOnce();
+        } else {
+        // Clic hors du groupe → on désélectionne et on repart sur ce mot seul en S
+        clearSelection();
+        el.classList.add("sel");
+        el.dataset.state = "S";
+        anchorIndex = i; // nouvelle ancre
+        }
+    } else {
+        // Aucune sélection → on sélectionne ce mot et on le met en S
+        el.classList.add("sel");
+        el.dataset.state = "S";
+        anchorIndex = i;
+    }
+    }
+
+
+  // ----- Clavier -----
+  document.addEventListener("keydown",(e)=>{
+    if(e.key==="Control") ctrl=true;
+    if(e.key==="Shift")   shift=true;
+    if(e.key.startsWith("Arrow")) arrow=true;
+
+    // Espace = uniquement désélection du groupe
+    if(e.code==="Space"){
+      e.preventDefault();
+      clearSelection();
+      anchorIndex=null;
+    }
+  });
+  document.addEventListener("keyup",(e)=>{
+    if(e.key==="Control") ctrl=false;
+    if(e.key==="Shift")   shift=false;
+    if(e.key.startsWith("Arrow")) arrow=false;
+    // NOTE: aucun cycle au relâchement → évite l’ancien comportement incorrect
+  });
+
+  // ----- Validation / Navigation -----
+  function validate(){
+    if(locked) return;
+    const it=data[idx];
+    const toks=$$(".tok",elW);
+    let ok=0, tot=0; // on ne compte que les mots qui ont un attendu non vide
+    toks.forEach((el,j)=>{
+      const attendu = it.phrase[j]?.fonction || "";
+      if(attendu===""){ el.classList.remove("ok","ko"); return; } // ignoré au score
+      tot++;
+      const eleve = el.dataset.state || "";
+      el.classList.remove("ok","ko");
+      if(attendu===eleve){ el.classList.add("ok"); ok++; }
+      else               { el.classList.add("ko"); }
+    });
+    scLine.textContent=`Score phrase : ${ok}/${tot} (${tot?Math.round(100*ok/tot):0}%)`;
+
+    const O=parseInt(localStorage.getItem(K_OK)||"0",10);
+    const T=parseInt(localStorage.getItem(K_TOTAL)||"0",10);
+    localStorage.setItem(K_OK,String(O+ok));
+    localStorage.setItem(K_TOTAL,String(T+tot));
+    updateCumul();
+
+    locked=true;
+  }
+
+  function retry(){
+    $$(".tok",elW).forEach(el=>{
+      el.dataset.state="";
+      el.classList.remove("ok","ko","sel");
+    });
+    scLine.textContent="";
+    locked=false;
+    anchorIndex=null;
+  }
+
+  function next(){
+    if(idx<data.length-1){ idx++; buildPhrase(data[idx]); }
+    else { location.href="index.html"; }
+  }
+
+  function updateCumul(){
+    const o=parseInt(localStorage.getItem(K_OK)||"0",10);
+    const t=parseInt(localStorage.getItem(K_TOTAL)||"0",10);
+    const p=t?Math.round(100*o/t):0;
+    scCum.textContent=`Score cumulé : ${o}/${t} (${p}%)`;
+  }
+
+  // ----- Bind -----
+  if(bV) bV.onclick=validate;
+  if(bR) bR.onclick=retry;
+  if(bN) bN.onclick=next;
+
+  // ----- Init -----
+  (async ()=>{
+    await loadJson();
+    idx=0;
+    buildPhrase(data[idx]);
+  })();
+
+})();
+</script>
+
+</body>
+</html>
