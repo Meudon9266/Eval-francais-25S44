@@ -1,0 +1,6 @@
+{
+  "items": [
+    { "id": 1,  "ref": "exoPrep1",  "link": "exoPrep.html?file=exoPrep1.json",  "desc": "Prépositions de lieu (8 phrases)",              "stars": 1 },
+    { "id": 2, "ref": "exoPrep10", "link": "exoPrep.html?file=exoPrep10.json", "desc": "Idiomatique (8 phrases)",                      "stars": 5 }
+  ]
+}
