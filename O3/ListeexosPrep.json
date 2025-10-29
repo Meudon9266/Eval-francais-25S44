@@ -1,0 +1,6 @@
+{
+  "items": [
+    { "id": 1,  "ref": "exo1",  "link": "exo1.html",  "desc": "le pluriel des mots en eau, au, eu ou ou",              "stars": 1 },
+    { "id": 2, "ref": "exo2", "link": "exo2.html", "desc": "Idiomatique (8 phrases)",                      "stars": 5 }
+  ]
+}

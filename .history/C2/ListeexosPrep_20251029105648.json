@@ -1,0 +1,10 @@
+{
+  "items": [
+    { "id": 1,  "ref": "exo1",  "link": "exo1.html",  "desc": "Impératif",              "stars": 1 },
+    { "id": 2,  "ref": "exo2",  "link": "exo2.html",  "desc": "Impératif",              "stars": 1 },
+    { "id": 3,  "ref": "exo3",  "link": "exo3.html",  "desc": "Impératif",              "stars": 1 },
+    { "id": 4, "ref": "exo4", "link": "exo4.html", "desc": "Imperatif",                      "stars": 1 },
+    { "id": 6, "ref": "exo6", "link": "exo6.html", "desc": "Imperatif",                      "stars": 1 },
+    { "id": 5, "ref": "exo5", "link": "exo5.html", "desc": "Imperatif",                      "stars": 1 }
+   ]
+}

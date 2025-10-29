@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Impératif – Être, avoir, dire, faire • ExI multi-pages</title>
+<style>
+:root{--base-size:18px;--ok:#2e7d32;--ko:#c62828;--bg:#f7fbff;}
+html,body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;font-size:var(--base-size);line-height:1.5;color:#111}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:5}
+.btn{appearance:none;border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+.btn:hover{background:#f8fafc}
+.btn.primary{background:#2563eb;border-color:#2563eb;color:#fff}
+.btn.small{font-size:.85rem;padding:6px 8px;border-radius:8px}
+.wrap{max-width:1000px;margin:18px auto;padding:0 14px 30px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 8px 18px rgba(0,0,0,.04);padding:18px}
+h1{font-size:1.2rem;margin:.2rem 0 .6rem}
+.globalScore{margin:.2rem 0 1rem;font-weight:700}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+
+/* Onglets pastel discrets */
+.tab{
+  border:1px solid #e5e7eb;border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:600;
+  transition:background .2s ease, border-color .2s ease, color .2s ease;
+}
+.tab[data-page="assoc"]{background:#e6f0ff;color:#0f3d91;border-color:#d6e4ff}
+.tab[data-page="repondre"]{background:#e6fff0;color:#0c6b3f;border-color:#d5ffe6}
+.tab[data-page="transformer"]{background:#ffeef6;color:#8a1d4a;border-color:#ffd7e9}
+.tab.active[data-page="assoc"]{background:#cfe3ff;color:#06337f;border-color:#9dc4ff}
+.tab.active[data-page="repondre"]{background:#ccfde4;color:#075f36;border-color:#8ef2bf}
+.tab.active[data-page="transformer"]{background:#ffd2e7;color:#7a113f;border-color:#ff9ec8}
+
+.page{display:none}
+.page.active{display:block}
+.q{margin:.55rem 0}
+select, input[type="text"]{
+  padding:8px 10px;border:2px solid #d1d5db;border-radius:10px;min-width:9ch;outline:none
+}
+select:focus, input[type="text"]:focus{border-color:#2563eb;background:#f8fafc}
+.ok{border-color:var(--ok)!important;background:#edf7ee!important}
+.ko{border-color:var(--ko)!important;background:#fde8e8!important}
+.feedback{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.muted{color:#64748b;font-size:.92rem}
+#resetAll{background:none;border:none;color:#999;font-size:.82rem;text-decoration:underline;cursor:pointer}
+#resetAll:hover{color:#333}
+hr.sep{border:none;border-top:1px dashed #e5e7eb;margin:14px 0}
+</style>
+</head>
+<body>
+<!-- A+A- + Accueil + Vérifier -->
+<div class="bar">
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <a class="btn small" href="index.html" title="Accueil">🏠 Accueil</a>
+    <span class="btn small" style="cursor:default">Impératif : être / avoir / dire / faire</span>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+    <button class="btn small" id="less" style="background:#fef3c7;border-color:#fcd34d">A−</button>
+    <button class="btn small" id="more" style="background:#dbeafe;border-color:#60a5fa">A+</button>
+    <button class="btn primary" id="check">Vérifier</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="card">
+    <div class="globalScore" id="globalScore">Score cumulé : –</div>
+
+    <!-- Onglets -->
+    <div class="tabs">
+      <button class="tab active" data-page="assoc">1) Associer</button>
+      <button class="tab" data-page="repondre">2) Répondre</button>
+      <button class="tab" data-page="transformer">3) Transformer</button>
+    </div>
+
+    <!-- Page 1 : Associer (9 items) -->
+    <div class="page active" id="page-assoc">
+      <h1>Associe la bonne forme d’impératif</h1>
+      <div id="assoc">
+        <!-- être: sois, soyons, soyez | avoir: aie, ayons, ayez | dire: dis, disons, dites | faire: fais, faisons, faites -->
+        <div class="q">1. (tu, <em>être</em>) → 
+          <select data-id="a1" data-answer="sois"><option value="">— choisir —</option>
+            <option>sois</option><option>soyons</option><option>soyez</option>
+            <option>aie</option><option>ayons</option><option>ayez</option>
+            <option>dis</option><option>disons</option><option>dites</option>
+            <option>fais</option><option>faisons</option><option>faites</option>
+          </select>
+        </div>
+        <div class="q">2. (nous, <em>avoir</em>) → 
+          <select data-id="a2" data-answer="ayons"><option value="">— choisir —</option>
+            <option>sois</option><option>soyons</option><option>soyez</option>
+            <option>aie</option><option>ayons</option><option>ayez</option>
+            <option>dis</option><option>disons</option><option>dites</option>
+            <option>fais</option><option>faisons</option><option>faites</option>
+          </select>
+        </div>
+        <div class="q">3. (vous, <em>dire</em>) → 
+          <select data-id="a3" data-answer="dites"><option value="">— choisir —</option>
+            <option>sois</option><option>soyons</option><option>soyez</option>
+            <option>aie</option><option>ayons</option><option>ayez</option>
+            <option>dis</option><option>disons</option><option>dites</option>
+            <option>fais</option><option>faisons</option><option>faites</option>
+          </select>
+        </div>
+        <div class="q">4. (tu, <em>avoir</em>) → 
+          <select data-id="a4" data-answer="aie"><option value="">— choisir —</option>
+            <option>aie</option><option>ayons</option><option>ayez</option>
+            <option>sois</option><option>soyons</option><option>soyez</option>
+            <option>dis</option><option>disons</option><option>dites</option>
+            <option>fais</option><option>faisons</option><option>faites</option>
+          </select>
+        </div>
+        <div class="q">5. (nous, <em>être</em>) → 
+          <select data-id="a5" data-answer="soyons"><option value="">— choisir —</option>
+            <option>sois</option><option>soyons</option><option>soyez</option>
+            <option>aie</option><option>ayons</option><option>ayez</option>
+            <option>dis</option><option>disons</option><option>dites</option>
+            <option>fais</option><option>faisons</option><option>faites</option>
+          </select>
+        </div>
+        <div class="q">6. (vous, <em>faire</em>) → 
+          <select data-id="a6" data-answer="faites"><option value="">— choisir —</option>
+            <option>fais</option><option>faisons</option><option>faites</option>
+            <option>sois</option><option>soyons</option><option>soyez</option>
+            <option>aie</option><option>ayons</option><option>ayez</option>
+            <option>dis</option><option>disons</option><option>dites</option>
+          </select>
+        </div>
+        <div class="q">7. (tu, <em>dire</em>) → 
+          <select data-id="a7" data-answer="dis"><option value="">— choisir —</option>
+            <option>dis</option><option>disons</option><option>dites</option>
+            <option>sois</option><option>soyons</option><option>soyez</option>
+            <option>aie</option><option>ayons</option><option>ayez</option>
+            <option>fais</option><option>faisons</option><option>faites</option>
+          </select>
+        </div>
+        <div class="q">8. (nous, <em>faire</em>) → 
+          <select data-id="a8" data-answer="faisons"><option value="">— choisir —</option>
+            <option>fais</option><option>faisons</option><option>faites</option>
+            <option>dis</option><option>disons</option><option>dites</option>
+            <option>sois</option><option>soyons</option><option>soyez</option>
+            <option>aie</option><option>ayons</option><option>ayez</option>
+          </select>
+        </div>
+        <div class="q">9. (vous, <em>avoir</em>) → 
+          <select data-id="a9" data-answer="ayez"><option value="">— choisir —</option>
+            <option>aie</option><option>ayons</option><option>ayez</option>
+            <option>sois</option><option>soyons</option><option>soyez</option>
+            <option>dis</option><option>disons</option><option>dites</option>
+            <option>fais</option><option>faisons</option><option>faites</option>
+          </select>
+        </div>
+      </div>
+      <hr class="sep">
+      <div class="feedback">
+        <strong id="score-assoc">Score : –</strong>
+        <span id="try-assoc" class="muted">Tentatives : 0</span>
+        <button class="btn small" data-reset="assoc">Réessayer</button>
+      </div>
+    </div>
+
+    <!-- Page 2 : Répondre (9 items) -->
+    <div class="page" id="page-repondre">
+      <h1>Tape la forme d’impératif qui convient</h1>
+      <div id="rep">
+        <div class="q">1. (tu, être) <input type="text" data-id="r1" data-answer="sois"> prudent.</div>
+        <div class="q">2. (vous, dire) <input type="text" data-id="r2" data-answer="dites"> la vérité.</div>
+        <div class="q">3. (nous, avoir) <input type="text" data-id="r3" data-answer="ayons"> confiance.</div>
+        <div class="q">4. (tu, faire) <input type="text" data-id="r4" data-answer="fais"> un effort.</div>
+        <div class="q">5. (nous, être) <input type="text" data-id="r5" data-answer="soyons"> à l’heure.</div>
+        <div class="q">6. (vous, avoir) <input type="text" data-id="r6" data-answer="ayez"> pitié.</div>
+        <div class="q">7. (tu, dire) <input type="text" data-id="r7" data-answer="dis"> bonjour.</div>
+        <div class="q">8. (vous, faire) <input type="text" data-id="r8" data-answer="faites"> attention.</div>
+        <div class="q">9. (nous, dire) <input type="text" data-id="r9" data-answer="disons"> merci.</div>
+      </div>
+      <hr class="sep">
+      <div class="feedback">
+        <strong id="score-rep">Score : –</strong>
+        <span id="try-rep" class="muted">Tentatives : 0</span>
+        <button class="btn small" data-reset="rep">Réessayer</button>
+      </div>
+    </div>
+
+    <!-- Page 3 : Transformer (9 items) -->
+    <div class="page" id="page-transformer">
+      <h1>Transforme en impératif</h1>
+      <div id="tr">
+        <div class="q">1. Tu dois être patient. → <input type="text" data-id="t1" data-answer="sois"> patient.</div>
+        <div class="q">2. Nous devons avoir du courage. → <input type="text" data-id="t2" data-answer="ayons"> du courage.</div>
+        <div class="q">3. Vous devez dire la vérité. → <input type="text" data-id="t3" data-answer="dites"> la vérité.</div>
+        <div class="q">4. Tu dois faire tes devoirs. → <input type="text" data-id="t4" data-answer="fais"> tes devoirs.</div>
+        <div class="q">5. Vous devez être attentifs. → <input type="text" data-id="t5" data-answer="soyez"> attentifs.</div>
+        <div class="q">6. Tu dois avoir confiance. → <input type="text" data-id="t6" data-answer="aie"> confiance.</div>
+        <div class="q">7. Nous devons dire merci. → <input type="text" data-id="t7" data-answer="disons"> merci.</div>
+        <div class="q">8. Nous devons faire un effort. → <input type="text" data-id="t8" data-answer="faisons"> un effort.</div>
+        <div class="q">9. Vous devez avoir de la patience. → <input type="text" data-id="t9" data-answer="ayez"> de la patience.</div>
+      </div>
+      <hr class="sep">
+      <div class="feedback">
+        <strong id="score-tr">Score : –</strong>
+        <span id="try-tr" class="muted">Tentatives : 0</span>
+        <button class="btn small" data-reset="tr">Réessayer</button>
+        <button class="btn small" id="resetAll" title="Réinitialiser tout">Réinitialiser le score cumulé</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{
+  const $=(s,ctx=document)=>ctx.querySelector(s);
+  const $$=(s,ctx=document)=>Array.from(ctx.querySelectorAll(s));
+
+  // Onglets
+  $$('.tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      $$('.tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const id=t.dataset.page;
+      $$('.page').forEach(p=>p.classList.remove('active'));
+      $('#page-'+id).classList.add('active');
+    });
+  });
+
+  // Constantes LS + normalisation
+  const LS_FONT='ExI_imperatif_multi_font';
+  const LS_ATT='ExI_imperatif_multi_attempts_v2';       // tentatives complètes
+  const LS_LAST='ExI_imperatif_multi_last_v2';          // dernière note par page (pour score cumulé)
+  const norm=s=>(s||'').toString().trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
+
+  const loadAttempts=()=>{ try{ return JSON.parse(localStorage.getItem(LS_ATT)||'[]'); }catch(_){ return []; } };
+  const saveAttempts=a=>localStorage.setItem(LS_ATT, JSON.stringify(a));
+  const loadLast=()=>{ try{ return JSON.parse(localStorage.getItem(LS_LAST)||'{}'); }catch(_){ return {}; } };
+  const saveLast=o=>localStorage.setItem(LS_LAST, JSON.stringify(o));
+  const pushAttempt=(section,report)=>{ const all=loadAttempts(); all.push({section,...report}); saveAttempts(all); return all; };
+
+  // Mise à jour du score cumulé (somme des DERNIÈRES vérifications de chaque page)
+  function updateGlobalScore(){
+    const last=loadLast();
+    const parts=['assoc','repondre','transformer']
+      .map(k=>last[k]||{correct:0,total:0});
+    const correct=parts.reduce((s,p)=>s+p.correct,0);
+    const total=parts.reduce((s,p)=>s+p.total,0);
+    $('#globalScore').textContent = total ? `Score cumulé : ${correct}/${total} (${Math.round(100*correct/total)}%)` : 'Score cumulé : –';
+  }
+  updateGlobalScore();
+
+  // Vérification globale (bouton top)
+  $('#check').addEventListener('click',()=>{
+    if($('#page-assoc').classList.contains('active')) checkAssoc();
+    else if($('#page-repondre').classList.contains('active')) checkRep();
+    else checkTr();
+  });
+
+  // A+A-
+  function setFont(px){ document.documentElement.style.setProperty('--base-size', px+'px'); localStorage.setItem(LS_FONT,String(px)); }
+  $('#more').addEventListener('click',()=>{ const cur=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--base-size')); setFont(Math.min(cur+2,28)); });
+  $('#less').addEventListener('click',()=>{ const cur=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--base-size')); setFont(Math.max(cur-2,12)); });
+  const saved=parseInt(localStorage.getItem(LS_FONT)||'0'); if(saved) setFont(saved);
+
+  // RESET (local couleurs)
+  $$('[data-reset]').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const area=b.getAttribute('data-reset');
+      (area==='assoc'? $$('#assoc select'): (area==='rep'? $$('#rep input'): $$('#tr input')))
+        .forEach(el=>el.classList.remove('ok','ko'));
+    });
+  });
+  // RESET global (cumul)
+  $('#resetAll').addEventListener('click',()=>{
+    if(confirm('Réinitialiser toutes les tentatives et le score cumulé ?')){
+      localStorage.removeItem(LS_ATT);
+      localStorage.removeItem(LS_LAST);
+      updateGlobalScore();
+      $('#try-assoc').textContent='Tentatives : 0';
+      $('#try-rep').textContent='Tentatives : 0';
+      $('#try-tr').textContent='Tentatives : 0';
+      $('#score-assoc').textContent='Score : –';
+      $('#score-rep').textContent='Score : –';
+      $('#score-tr').textContent='Score : –';
+    }
+  });
+
+  // -------- Page 1 : Associer
+  function checkAssoc(){
+    const sels=$$('#assoc select');
+    let correct=0,total=sels.length, items=[];
+    sels.forEach(s=>{
+      const ok=(s.value||'')===s.dataset.answer;
+      s.classList.remove('ok','ko'); s.classList.add(ok?'ok':'ko');
+      if(ok) correct++;
+      items.push({id:s.dataset.id, entered:(s.value||'(vide)'), expected:s.dataset.answer, ok});
+    });
+    const score=Math.round(100*correct/total);
+    const now=new Date();
+    const report={ts:now.toISOString(),nice:now.toLocaleString(),score,correct,total,items};
+    const all=pushAttempt('assoc',report);
+
+    // Mémoriser dernière note pour le cumulé
+    const last=loadLast(); last.assoc={correct,total}; saveLast(last); updateGlobalScore();
+
+    $('#score-assoc').textContent=`Score : ${correct}/${total} (${score}%)`;
+    $('#try-assoc').textContent=`Tentatives : ${all.filter(a=>a.section==='assoc').length}`;
+
+    teleRap(all); // TeleRap complet
+  }
+
+  // -------- Page 2 : Répondre
+  function checkRep(){
+    const ins=$$('#rep input');
+    let correct=0,total=ins.length, items=[];
+    ins.forEach(i=>{
+      const ok=norm(i.value)===norm(i.dataset.answer);
+      i.classList.remove('ok','ko'); i.classList.add(ok?'ok':'ko');
+      if(ok) correct++;
+      items.push({id:i.dataset.id, entered:(i.value||'').trim()||'(vide)', expected:i.dataset.answer, ok});
+    });
+    const score=Math.round(100*correct/total);
+    const now=new Date();
+    const report={ts:now.toISOString(),nice:now.toLocaleString(),score,correct,total,items};
+    const all=pushAttempt('repondre',report);
+
+    const last=loadLast(); last.repondre={correct,total}; saveLast(last); updateGlobalScore();
+
+    $('#score-rep').textContent=`Score : ${correct}/${total} (${score}%)`;
+    $('#try-rep').textContent=`Tentatives : ${all.filter(a=>a.section==='repondre').length}`;
+
+    teleRap(all);
+  }
+
+  // -------- Page 3 : Transformer
+  function checkTr(){
+    const ins=$$('#tr input');
+    let correct=0,total=ins.length, items=[];
+    ins.forEach(i=>{
+      const ok=norm(i.value)===norm(i.dataset.answer);
+      i.classList.remove('ok','ko'); i.classList.add(ok?'ok':'ko');
+      if(ok) correct++;
+      items.push({id:i.dataset.id, entered:(i.value||'').trim()||'(vide)', expected:i.dataset.answer, ok});
+    });
+    const score=Math.round(100*correct/total);
+    const now=new Date();
+    const report={ts:now.toISOString(),nice:now.toLocaleString(),score,correct,total,items};
+    const all=pushAttempt('transformer',report);
+
+    const last=loadLast(); last.transformer={correct,total}; saveLast(last); updateGlobalScore();
+
+    $('#score-tr').textContent=`Score : ${correct}/${total} (${score}%)`;
+    $('#try-tr').textContent=`Tentatives : ${all.filter(a=>a.section==='transformer').length}`;
+
+    teleRap(all);
+  }
+
+  // -------- TeleRap COMPLET (toutes réponses, toutes pages)
+  function teleRap(all){
+    const rows=all.map((a,i)=>{
+      const title = a.section==='assoc' ? 'Associer'
+                    : a.section==='repondre' ? 'Répondre' : 'Transformer';
+      const table = `<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;width:100%;border-color:#eee">
+        <thead><tr style="background:#fafafa"><th style="text-align:left">#</th><th style="text-align:left">Réponse saisie</th><th style="text-align:left">Réponse attendue</th><th>État</th></tr></thead>
+        <tbody>
+          ${a.items.map(it=>`<tr>
+             <td>${it.id}</td><td>${esc(it.entered)}</td><td>${esc(it.expected)}</td>
+             <td style="text-align:center">${it.ok?'✓':'✗'}</td>
+           </tr>`).join('')}
+        </tbody>
+      </table>`;
+      return `<section style="margin:14px 0 20px">
+        <h3 style="margin:0 0 6px">Tentative ${i+1} – ${title} – ${a.nice} — Score ${a.correct}/${a.total} (${a.score}%)</h3>
+        ${table}
+      </section>`;
+    }).join('\n');
+
+    const html=`<!doctype html><html lang="fr"><head><meta charset="utf-8">
+      <title>Rapport complet – Impératif (multi-pages)</title>
+      <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;margin:24px;line-height:1.5}
+      h1{font-size:20px;margin:0 0 10px}h3{font-size:16px}</style></head>
+      <body><h1>Rapport COMPLET – Impératif (être / avoir / dire / faire)</h1>
+      <p>Le rapport liste toutes les réponses saisies (correctes ✓ et fausses ✗) pour chaque tentative et chaque page.</p>
+      ${rows || '<p>Aucune tentative enregistrée.</p>'}
+      </body></html>`;
+
+    const who=(prompt("Prénom de l’élève (facultatif) :","")||"").trim();
+    const fname = who ? sanitize(who)+'-Imperatif-Multi-rapport.html' : 'C2Exo-Imperatif-Multi-rapport.html';
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url;a.download=fname;document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},0);
+  }
+
+  // Utils
+  const esc = s => (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const sanitize = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9_-]+/g,'_');
+})();
+</script>
+</body>
+</html>

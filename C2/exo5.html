@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vb3 – Voir / Devoir / Pouvoir / Vouloir / Recevoir / Savoir — ExI multi-pages</title>
+<style>
+:root{--base-size:18px;--ok:#2e7d32;--ko:#c62828;--bg:#f7fbff;}
+html,body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;font-size:var(--base-size);line-height:1.5;color:#111}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:5}
+.btn{appearance:none;border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+.btn:hover{background:#f8fafc}
+.btn.primary{background:#2563eb;border-color:#2563eb;color:#fff}
+.btn.small{font-size:.85rem;padding:6px 8px;border-radius:8px}
+.wrap{max-width:1100px;margin:18px auto;padding:0 14px 30px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 8px 18px rgba(0,0,0,.04);padding:18px}
+h1{font-size:1.2rem;margin:.2rem 0 .6rem}
+.globalScore{margin:.2rem 0 1rem;font-weight:700}
+.small{font-size:.9rem;color:#475569}
+kbd{background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:0 6px}
+
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab{border:1px solid #e5e7eb;border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:600;transition:background .2s,border-color .2s,color .2s}
+.tab[data-page="formes"]{background:#e6f0ff;color:#0f3d91;border-color:#d6e4ff}
+.tab[data-page="imperatif"]{background:#e6fff0;color:#0c6b3f;border-color:#d5ffe6}
+.tab[data-page="t1"]{background:#fff7e6;color:#7a4a02;border-color:#ffe6b3}
+.tab[data-page="t2"]{background:#ffeef6;color:#8a1d4a;border-color:#ffd7e9}
+.tab[data-page="t3"]{background:#efeefe;color:#3b2f7a;border-color:#ddd8ff}
+.tab.active[data-page="formes"]{background:#cfe3ff;color:#06337f;border-color:#9dc4ff}
+.tab.active[data-page="imperatif"]{background:#ccfde4;color:#075f36;border-color:#8ef2bf}
+.tab.active[data-page="t1"]{background:#ffe2b8;color:#6a3f00;border-color:#ffcd80}
+.tab.active[data-page="t2"]{background:#ffd2e7;color:#7a113f;border-color:#ff9ec8}
+.tab.active[data-page="t3"]{background:#e0ddff;color:#2b2169;border-color:#c2baff}
+
+.page{display:none}
+.page.active{display:block}
+.q{margin:.55rem 0}
+.q .inst{font-size:.9em;color:#334155} /* consignes -1 taille */
+input[type="text"], select{padding:8px 10px;border:2px solid #d1d5db;border-radius:10px;min-width:10ch;outline:none}
+input[type="text"]:focus, select:focus{border-color:#2563eb;background:#f8fafc}
+.ok{border-color:var(--ok)!important;background:#edf7ee!important}
+.ko{border-color:var(--ko)!important;background:#fde8e8!important}
+.feedback{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.muted{color:#64748b;font-size:.92rem}
+#resetAll{background:none;border:none;color:#999;font-size:.82rem;text-decoration:underline;cursor:pointer}
+#resetAll:hover{color:#333}
+hr.sep{border:none;border-top:1px dashed #e5e7eb;margin:14px 0}
+</style>
+</head>
+<body>
+<!-- A+A- + Accueil + Vérifier -->
+<div class="bar">
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <a class="btn small" href="index.html" title="Accueil">🏠 Accueil</a>
+    <span class="btn small" style="cursor:default">Vb3 — voir / devoir / pouvoir / vouloir / recevoir / savoir</span>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+    <button class="btn small" id="less" style="background:#fef3c7;border-color:#fcd34d">A−</button>
+    <button class="btn small" id="more" style="background:#dbeafe;border-color:#60a5fa">A+</button>
+    <button class="btn primary" id="check">Vérifier</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="card">
+    <div class="globalScore" id="globalScore">Score cumulé : –</div>
+
+    <p class="small">NB : impératif usuel pour <em>voir, vouloir, recevoir, savoir</em>. Pas d’impératif standard pour <em>devoir, pouvoir</em>.</p>
+
+    <div class="tabs">
+      <button class="tab active" data-page="formes">1) Formes</button>
+      <button class="tab" data-page="imperatif">2) Impératif & présent (personne CHANGÉE)</button>
+      <button class="tab" data-page="t1">3) Transformation 1</button>
+      <button class="tab" data-page="t2">4) Transformation 2</button>
+      <button class="tab" data-page="t3">5) Transformation 3</button>
+    </div>
+
+    <!-- Page 1 : FORMES (12, ordre aléatoire) -->
+    <div class="page active" id="page-formes">
+      <h1>Donne la forme demandée</h1>
+      <div id="formes"></div>
+      <hr class="sep">
+      <div class="feedback">
+        <strong id="score-formes">Score : –</strong>
+        <span id="try-formes" class="muted">Tentatives : 0</span>
+        <button class="btn small" data-reset="formes">Réessayer</button>
+      </div>
+    </div>
+
+    <!-- Page 2 : IMPÉRATIF & PRÉSENT (12, ordre aléatoire, personne différente) -->
+    <div class="page" id="page-imperatif">
+      <h1>Présent ↔ impératif (personne différente)</h1>
+      <div id="imperatif"></div>
+      <hr class="sep">
+      <div class="feedback">
+        <strong id="score-imperatif">Score : –</strong>
+        <span id="try-imperatif" class="muted">Tentatives : 0</span>
+        <button class="btn small" data-reset="imperatif">Réessayer</button>
+      </div>
+    </div>
+
+    <!-- Page 3 : TRANSFORMATION 1 (12, ordre aléatoire) -->
+    <div class="page" id="page-t1">
+      <h1>Présent / impératif → participe passé (tape uniquement la forme du verbe)</h1>
+      <div id="t1"></div>
+      <hr class="sep">
+      <div class="feedback">
+        <strong id="score-t1">Score : –</strong>
+        <span id="try-t1" class="muted">Tentatives : 0</span>
+        <button class="btn small" data-reset="t1">Réessayer</button>
+      </div>
+    </div>
+
+    <!-- Page 4 : TRANSFORMATION 2 (12, ordre aléatoire) -->
+    <div class="page" id="page-t2">
+      <h1>Présent : alterner entre forme 1 (je/tu/il/ils) et forme 2 (nous/vous)</h1>
+      <div id="t2"></div>
+      <hr class="sep">
+      <div class="feedback">
+        <strong id="score-t2">Score : –</strong>
+        <span id="try-t2" class="muted">Tentatives : 0</span>
+        <button class="btn small" data-reset="t2">Réessayer</button>
+      </div>
+    </div>
+
+    <!-- Page 5 : TRANSFORMATION 3 (12) — ordre aléatoire -->
+    <div class="page" id="page-t3">
+      <h1>Mix : impératif (consignes neutres) & présent (formes 1 ↔ 2)</h1>
+      <div id="t3"></div>
+      <hr class="sep">
+      <div class="feedback">
+        <strong id="score-t3">Score : –</strong>
+        <span id="try-t3" class="muted">Tentatives : 0</span>
+        <button class="btn small" data-reset="t3">Réessayer</button>
+        <button class="btn small" id="resetAll" title="Réinitialiser tout">Réinitialiser le score cumulé</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{
+  const $=(s,ctx=document)=>ctx.querySelector(s);
+  const $$=(s,ctx=document)=>Array.from(ctx.querySelectorAll(s));
+
+  // Onglets
+  $$('.tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      $$('.tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const id=t.dataset.page;
+      $$('.page').forEach(p=>p.classList.remove('active'));
+      $('#page-'+id).classList.add('active');
+    });
+  });
+
+  // LS keys + normalisation
+  const LS_FONT='ExI_vb3_font_v3';
+  const LS_ATT='ExI_vb3_attempts_v3';   // TeleRap complet
+  const LS_LAST='ExI_vb3_last_v3';      // dernière note par page
+
+  const norm=s=>(s||'').toString().trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[’']/g,'')
+    .replace(/\s+/g,' ');
+
+  const parseAns = attr => (attr||'').split('|').map(a=>a.trim()).filter(Boolean);
+  const loadAttempts=()=>{ try{return JSON.parse(localStorage.getItem(LS_ATT)||'[]')}catch(_){return[]} };
+  const saveAttempts=a=>localStorage.setItem(LS_ATT,JSON.stringify(a));
+  const loadLast=()=>{ try{return JSON.parse(localStorage.getItem(LS_LAST)||'{}')}catch(_){return{}} };
+  const saveLast=o=>localStorage.setItem(LS_LAST,JSON.stringify(o));
+  const pushAttempt=(section,report)=>{ const all=loadAttempts(); all.push({section,...report}); saveAttempts(all); return all; };
+
+  function updateGlobalScore(){
+    const last=loadLast();
+    const parts=['formes','imperatif','t1','t2','t3'].map(k=>last[k]||{correct:0,total:0});
+    const correct=parts.reduce((s,p)=>s+p.correct,0);
+    const total=parts.reduce((s,p)=>s+p.total,0);
+    $('#globalScore').textContent = total ? `Score cumulé : ${correct}/${total} (${Math.round(100*correct/total)}%)` : 'Score cumulé : –';
+  }
+
+  // A+A-
+  function setFont(px){ document.documentElement.style.setProperty('--base-size',px+'px'); localStorage.setItem(LS_FONT,String(px)); }
+  $('#more').addEventListener('click',()=>{ const cur=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--base-size')); setFont(Math.min(cur+2,28)); });
+  $('#less').addEventListener('click',()=>{ const cur=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--base-size')); setFont(Math.max(cur-2,12)); });
+  const saved=parseInt(localStorage.getItem(LS_FONT)||'0'); if(saved) setFont(saved);
+
+  // RESET couleurs (local)
+  $$('[data-reset]').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const area=b.getAttribute('data-reset');
+      (area==='formes'? $$('#formes input'):
+       area==='imperatif'? $$('#imperatif input'):
+       area==='t1'? $$('#t1 input'):
+       area==='t2'? $$('#t2 input'): $$('#t3 input'))
+      .forEach(el=>el.classList.remove('ok','ko'));
+    });
+  });
+
+  // RESET global
+  $('#resetAll').addEventListener('click',()=>{
+    if(confirm('Réinitialiser toutes les tentatives et le score cumulé ?')){
+      localStorage.removeItem(LS_ATT);
+      localStorage.removeItem(LS_LAST);
+      updateGlobalScore();
+      ['formes','imperatif','t1','t2','t3'].forEach(k=>{
+        const sId = '#score-'+k.replace(/^t/,'t');
+        const tId = '#try-'+k.replace(/^t/,'t');
+        (document.querySelector(sId)||{}).textContent='Score : –';
+        (document.querySelector(tId)||{}).textContent='Tentatives : 0';
+      });
+    }
+  });
+
+  // =========================
+  // Données EXERCICES (12 items chacun) — avec libellé .inst (petite police)
+  // =========================
+
+  // FORMES
+  const FORMES = [
+    {label:'<span class="inst"><em>voir</em>, participe passé</span>', ans:'vu'},
+    {label:'<span class="inst"><em>recevoir</em>, présent (nous)</span>', ans:'recevons'},
+    {label:'<span class="inst"><em>vouloir</em>, présent (ils/elles)</span>', ans:'veulent'},
+    {label:'<span class="inst"><em>devoir</em>, présent (vous)</span>', ans:'devez'},
+    {label:'<span class="inst"><em>savoir</em>, présent (je)</span>', ans:'sais'},
+    {label:'<span class="inst"><em>pouvoir</em>, présent (il/elle)</span>', ans:'peut'},
+    {label:'<span class="inst">infinitif de « voulu »</span>', ans:'vouloir'},
+    {label:'<span class="inst"><em>recevoir</em>, participe passé</span>', ans:'reçu|recu'},
+    {label:'<span class="inst"><em>voir</em>, présent (vous)</span>', ans:'voyez'},
+    {label:'<span class="inst"><em>devoir</em>, participe passé</span>', ans:'dû|du|due|dus|dues'},
+    {label:'<span class="inst">infinitif de « su »</span>', ans:'savoir'},
+    {label:'<span class="inst"><em>pouvoir</em>, participe passé</span>', ans:'pu'},
+  ];
+
+  // IMPÉRATIF & PRÉSENT — personne différente
+  // (présent tu → impératif nous/vous ; impératif vous/nous → présent tu ; etc.)
+  const IMP = [
+    {label:'<span class="inst">(présent → impératif, personne changée) : <kbd>tu vois</kbd> → impératif <strong>2ᵉ p.</strong></span>', ans:'voyez'},
+    {label:'<span class="inst">(présent → impératif, personne changée) : <kbd>tu veux</kbd> → impératif <strong>1ʳᵉ p.</strong></span>', ans:'veuillons'},
+    {label:'<span class="inst">(présent → impératif, personne changée) : <kbd>tu reçois</kbd> → impératif <strong>2ᵉ p.</strong></span>', ans:'recevez'},
+    {label:'<span class="inst">(présent → impératif, personne changée) : <kbd>tu sais</kbd> → impératif <strong>2ᵉ p.</strong></span>', ans:'sachez'},
+    {label:'<span class="inst">(impératif → présent, personne changée) : <kbd>voyez</kbd> → présent <strong>tu</strong></span>', ans:'vois'},
+    {label:'<span class="inst">(impératif → présent, personne changée) : <kbd>veuillons</kbd> → présent <strong>tu</strong></span>', ans:'veux'},
+    {label:'<span class="inst">(impératif → présent, personne changée) : <kbd>recevez</kbd> → présent <strong>tu</strong></span>', ans:'reçois|recois'},
+    {label:'<span class="inst">(impératif → présent, personne changée) : <kbd>sachez</kbd> → présent <strong>tu</strong></span>', ans:'sais'},
+    {label:'<span class="inst">(phrase) « Tu veux écouter. » → impératif <strong>1ʳᵉ p.</strong></span>', ans:'veuillons'},
+    {label:'<span class="inst">(phrase) « Tu reçois une lettre. » → impératif <strong>2ᵉ p.</strong></span>', ans:'recevez'},
+    {label:'<span class="inst">(phrase) « Vous savez la règle. » → présent <strong>tu</strong></span>', ans:'sais'},
+    {label:'<span class="inst">(phrase) « Nous voyons la mer. » → impératif <strong>2ᵉ p.</strong></span>', ans:'voyez'},
+  ];
+
+  // T1 — présent/impératif → participe passé
+  const T1 = [
+    {label:'<span class="inst">Ils voient la tour.</span>', ans:'vu'},
+    {label:'<span class="inst">Tu reçois une réponse.</span>', ans:'reçu|recu'},
+    {label:'<span class="inst">Nous voulons réussir.</span>', ans:'voulu'},
+    {label:'<span class="inst">Vous savez la solution.</span>', ans:'su'},
+    {label:'<span class="inst">Il peut venir.</span>', ans:'pu'},
+    {label:'<span class="inst">Elle doit partir.</span>', ans:'dû|du|due|dus|dues'},
+    {label:'<span class="inst">Voyez ce paysage !</span>', ans:'vu'},
+    {label:'<span class="inst">Sache la règle !</span>', ans:'su'},
+    {label:'<span class="inst">Recevez ces documents !</span>', ans:'reçu|recu'},
+    {label:'<span class="inst">Veuille accepter ces excuses !</span>', ans:'voulu'},
+    {label:'<span class="inst">Ils doivent décider.</span>', ans:'dû|du|due|dus|dues'},
+    {label:'<span class="inst">Elles peuvent entrer.</span>', ans:'pu'},
+  ];
+
+  // T2 — présent forme 1 ↔ forme 2
+  const T2 = [
+    {label:'<span class="inst">Je vois le port. → (nous)</span>', ans:'voyons'},
+    {label:'<span class="inst">Nous voyons le port. → (je)</span>', ans:'vois'},
+    {label:'<span class="inst">Tu veux réussir. → (vous)</span>', ans:'voulez'},
+    {label:'<span class="inst">Vous voulez réussir. → (tu)</span>', ans:'veux'},
+    {label:'<span class="inst">Il reçoit un colis. → (nous)</span>', ans:'recevons'},
+    {label:'<span class="inst">Nous recevons un colis. → (il)</span>', ans:'reçoit|recoit'},
+    {label:'<span class="inst">Ils savent la réponse. → (nous)</span>', ans:'savons'},
+    {label:'<span class="inst">Nous savons la réponse. → (ils)</span>', ans:'savent'},
+    {label:'<span class="inst">Je dois venir. → (nous)</span>', ans:'devons'},
+    {label:'<span class="inst">Nous devons venir. → (je)</span>', ans:'dois'},
+    {label:'<span class="inst">Elle peut rester. → (vous)</span>', ans:'pouvez'},
+    {label:'<span class="inst">Vous pouvez rester. → (elle)</span>', ans:'peut'},
+  ];
+
+  // T3 — mix (déjà validé précédemment)
+  const T3 = [
+    {label:'<span class="inst">Présent (forme 2 → forme 1) : Vous recevez tout. → je …</span>', ans:'reçois|recois'},
+    {label:'<span class="inst">Impératif : 2e pers. sing. → 2e pers. plur. : Reçois ce message ! → …</span>', ans:'recevez'},
+    {label:'<span class="inst">Présent (forme 1 → forme 2) : Je dois partir. → vous …</span>', ans:'devez'},
+    {label:'<span class="inst">Impératif : 2e pers. sing. → 1re pers. plur. : Sache la règle ! → …</span>', ans:'sachez'},
+    {label:'<span class="inst">Présent (forme 1 → forme 2) : Tu vois bien. → vous …</span>', ans:'voyez'},
+    {label:'<span class="inst">Impératif : 1re pers. plur. → 2e pers. sing. : Voyons la mer ! → …</span>', ans:'vois'},
+    {label:'<span class="inst">Présent (forme 2 → forme 1) : Nous voulons venir. → ils …</span>', ans:'veulent'},
+    {label:'<span class="inst">Impératif : 2e pers. sing. → 1re pers. plur. : Veuille entrer ! → …</span>', ans:'veuillons'},
+    {label:'<span class="inst">Présent (forme 1 → forme 2) : Il sait déjà. → nous …</span>', ans:'savons'},
+    {label:'<span class="inst">Impératif : 2e pers. sing. → 2e pers. plur. : Vois la mer ! → …</span>', ans:'voyez'},
+    {label:'<span class="inst">Présent (forme 2 → forme 1) : Vous pouvez essayer. → je …</span>', ans:'peux'},
+    {label:'<span class="inst">Impératif : 2e pers. plur. → 2e pers. sing. : Recevez ce message ! → …</span>', ans:'reçois|recois'},
+  ];
+
+  // Helpers
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+ function renderList(containerSel, arr, prefix){
+    const cont = document.querySelector(containerSel);
+    cont.innerHTML = '';
+
+    // échappe pour un attribut HTML (évite la duplication de texte visible)
+    const escAttr = s => String(s)
+      .replace(/&/g,'&amp;')
+      .replace(/"/g,'&quot;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;');
+
+    // shuffle pour ordre aléatoire
+    const a = [...arr];
+    for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+
+    a.forEach((q,idx)=>{
+      const id = `${prefix}_${idx+1}`;
+      const div = document.createElement('div');
+      div.className = 'q';
+      // q.label est affiché une seule fois, et data-label reçoit une version échappée
+      const safeDataLabel = escAttr(q.label);
+      div.innerHTML = `${idx+1}. ${q.label} → ` +
+        `<input type="text" data-id="${id}" data-answers="${q.ans}" data-label="${safeDataLabel}">`;
+      cont.appendChild(div);
+    });
+  }
+
+  // RENDER (ordre aléatoire pour 1–4 + 5)
+  renderList('#formes', FORMES, 'f');
+  renderList('#imperatif', IMP, 'i');
+  renderList('#t1', T1, 't1');
+  renderList('#t2', T2, 't2');
+  renderList('#t3', T3, 't3');
+
+  // Vérifier routeur
+  $('#check').addEventListener('click',()=>{
+    if($('#page-formes').classList.contains('active')) checkSection('formes','#formes input','formes');
+    else if($('#page-imperatif').classList.contains('active')) checkSection('imperatif','#imperatif input','imperatif');
+    else if($('#page-t1').classList.contains('active')) checkSection('t1','#t1 input','t1');
+    else if($('#page-t2').classList.contains('active')) checkSection('t2','#t2 input','t2');
+    else checkSection('t3','#t3 input','t3');
+  });
+
+  function checkSection(name, qsel, key){
+    const ins=$$(qsel);
+    let correct=0,total=ins.length, items=[];
+    ins.forEach(i=>{
+      const ok = parseAns(i.dataset.answers).map(norm).includes(norm(i.value));
+      i.classList.remove('ok','ko'); i.classList.add(ok?'ok':'ko');
+      if(ok) correct++;
+      items.push({id:i.dataset.id, label:i.dataset.label||'', entered:(i.value||'').trim()||'(vide)', expected:i.dataset.answers, ok});
+    });
+    const score=Math.round(100*correct/total);
+    const now=new Date(); const all=pushAttempt(key,{ts:now.toISOString(),nice:now.toLocaleString(),score,correct,total,items});
+
+    const last=loadLast(); last[key]={correct,total}; saveLast(last); updateGlobalScore();
+
+    $('#score-'+key).textContent=`Score : ${correct}/${total} (${score}%)`;
+    $('#try-'+key).textContent=`Tentatives : ${all.filter(a=>a.section===key).length}`;
+    teleRap(all);
+  }
+
+  updateGlobalScore();
+
+  // -------- TeleRap COMPLET (toutes réponses, toutes pages)
+  function teleRap(all){
+    const rows=all.map((a,i)=>{
+      const titles={formes:'Formes',imperatif:'Impératif & présent',t1:'Transformation 1',t2:'Transformation 2',t3:'Transformation 3'};
+      const title=titles[a.section]||a.section;
+      const table = `<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;width:100%;border-color:#eee">
+        <thead><tr style="background:#fafafa"><th style="text-align:left">#</th><th style="text-align:left">Énoncé</th><th style="text-align:left">Saisi</th><th style="text-align:left">Attendu</th><th>État</th></tr></thead>
+        <tbody>${a.items.map(it=>`<tr>
+          <td>${it.id}</td><td>${esc(it.label||'')}</td><td>${esc(it.entered)}</td><td>${esc(it.expected)}</td>
+          <td style="text-align:center">${it.ok?'✓':'✗'}</td></tr>`).join('')}</tbody>
+      </table>`;
+      return `<section style="margin:14px 0 20px">
+        <h3 style="margin:0 0 6px">Tentative ${i+1} – ${title} – ${a.nice} — Score ${a.correct}/${a.total} (${a.score}%)</h3>
+        ${table}
+      </section>`;
+    }).join('\n');
+
+    const html=`<!doctype html><html lang="fr"><head><meta charset="utf-8">
+      <title>Rapport complet – Vb3</title>
+      <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;margin:24px;line-height:1.5}
+      h1{font-size:20px;margin:0 0 10px}h3{font-size:16px}</style></head>
+      <body><h1>Rapport COMPLET – Voir / Devoir / Pouvoir / Vouloir / Recevoir / Savoir</h1>
+      <p>Toutes les réponses (✓ correct / ✗ faux) pour chaque tentative et chaque page.</p>
+      ${rows || '<p>Aucune tentative enregistrée.</p>'}
+      </body></html>`;
+
+    const who=(prompt("Prénom de l’élève (facultatif) :","")||"").trim();
+    const fname = who ? sanitize(who)+'-Vb3-rapport.html' : 'C2Exo-Vb3-rapport.html';
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url;a.download=fname;document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},0);
+  }
+
+  // Utils
+  const esc = s => (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const sanitize = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9_-]+/g,'_');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Accueil — Exercices Prépositions</title>
+<style>
+:root{
+  --blue:#2563EB; --blue-ink:#1E3A8A; --ink:#1f2937;
+  --bg:#f7fafc; --card:#ffffff; --border:#e5e7eb;
+  --btn:#3B82F6; --amber:#F59E0B; --muted:#64748b; --muted2:#94a3b8;
+  --danger:#dc2626;
+}
+*{box-sizing:border-box}
+body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink)}
+.container{max-width:1100px; margin:24px auto; padding:0 16px}
+header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px}
+h1{font-size:28px; margin:0; color:var(--blue-ink)}
+.badge{background:#eff6ff; color:var(--blue-ink); border:1px solid #dbeafe; border-radius:999px; padding:.35rem .7rem; font-weight:600; font-size:14px}
+.card{background:var(--card); border:1px solid var(--border); border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.06); padding:12px}
+.toolbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; margin:8px 0 14px}
+.group{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.btn{display:inline-flex; align-items:center; gap:.5rem; padding:.5rem .9rem; border-radius:10px; border:1px solid transparent; cursor:pointer; font-weight:700; font-size:14px; text-decoration:none}
+.btn-primary{background:var(--btn); color:#fff}
+.btn-secondary{background:#0ea5e9; color:#fff}
+.btn-ghost{background:#e5e7eb; color:#111827}
+.btn-danger{background:var(--danger); color:#fff}
+.table{width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border:1px solid var(--border); border-radius:12px}
+.table thead th{background:#f8fafc; text-align:left; font-size:13px; text-transform:uppercase; color:#475569; padding:10px 12px; border-bottom:1px solid var(--border)}
+.table tbody td{padding:10px 12px; border-bottom:1px solid var(--border); font-size:15px; vertical-align:middle}
+.table tbody tr:hover{background:#f9fbff}
+.ref{font-family:ui-monospace,Menlo,monospace; font-size:14px; color:#334155; background:#f8fafc; border:1px dashed #e2e8f0; padding:.25rem .5rem; border-radius:6px}
+.desc{color:#334155}
+.stars{font-size:18px; letter-spacing:2px; cursor:pointer; user-select:none}
+.stars .on{color:var(--amber)}
+.small{font-size:12px; color:var(--muted)}
+.actions{display:flex; gap:6px; align-items:center; justify-content:flex-start; flex-wrap:wrap}
+.iconbtn{background:#eef2ff; border:1px solid #e5e7eb; color:#374151; padding:.25rem .45rem; border-radius:8px; cursor:pointer}
+.iconbtn:hover{filter:brightness(.98)}
+.hidden{display:none}
+input[type="text"]{padding:.45rem .55rem; border:1px solid var(--border); border-radius:8px; font-size:14px; width:100%}
+input.short{max-width:200px}
+input.slim{padding:.35rem .5rem}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Accueil — Exercices « Prépositions »</h1>
+    <span class="badge" id="badgeCount">…</span>
+  </header>
+
+  <div class="card">
+    <div class="toolbar">
+      <div class="group">
+        <button class="btn btn-primary" id="btnImport">Importer listeexosPrep.json…</button>
+        <button class="btn btn-secondary" id="btnExport">Exporter listeexosPrep.json</button>
+        <button class="btn btn-ghost" id="btnToggleEdit">Mode édition : <span id="editState">OFF</span></button>
+      </div>
+      <div class="group">
+        <a id="btnHomeIndex" class="btn btn-ghost" href="indexPreps.html" aria-label="Accueil">Accueil</a>
+        <a id="btnTutorialIndex" class="btn btn-secondary hidden" href="tuto.html" aria-label="Ouvrir le tutoriel">Tutoriel</a>
+      </div>
+    </div>
+
+    <table class="table" aria-label="Liste des exercices">
+      <thead>
+        <tr>
+          <th style="width:60px">#</th>
+          <th style="width:200px">Référence</th>
+          <th>Description</th>
+          <th style="width:150px">Difficulté</th>
+          <th style="width:180px">Lancer</th>
+          <th style="width:200px">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+
+    <div style="margin-top:12px" class="group">
+      <div>
+        <label class="small">Référence</label><br>
+        <input id="newRef" type="text" class="short" placeholder="exoPrep11">
+      </div>
+      <div style="min-width:320px; flex:1">
+        <label class="small">Description</label><br>
+        <input id="newDesc" type="text" placeholder="Description de l’exercice (8 phrases)">
+      </div>
+      <div>
+        <label class="small">Lien (auto si vide)</label><br>
+        <input id="newLink" type="text" class="short" placeholder="exoPrep.html?file=exoPrep11.json">
+      </div>
+      <div>
+        <label class="small">Difficulté</label><br>
+        <span id="newStars" class="stars" role="radiogroup" aria-label="Choisir la difficulté">
+          <span data-v="1">☆</span><span data-v="2">☆</span><span data-v="3">☆</span><span data-v="4">☆</span><span data-v="5">☆</span>
+        </span>
+      </div>
+      <div>
+        <button class="btn btn-primary" id="btnAdd">Ajouter</button>
+        <button class="btn btn-ghost" id="btnGenModel">Exporter modèle JSON pour l’exo ajouté</button>
+      </div>
+    </div>
+
+    <input id="fileInput" type="file" accept="application/json" class="hidden"/>
+  </div>
+</div>
+
+<script>
+const FILE_NAME = "listeexosPrep.json";
+let editMode = false;
+let data = { items: [] };
+let pendingNewRef = "";
+const $ = s => document.querySelector(s);
+
+async function revealTutorialIfAvailable(idSelector){
+  try{
+    const r = await fetch('tuto.html', {method:'HEAD', cache:'no-store'});
+    if(!r.ok) throw new Error();
+    $(idSelector)?.classList.remove('hidden');
+  }catch(_){
+    try{
+      const r2 = await fetch('tuto.html', {cache:'no-store'});
+      if(r2.ok) $(idSelector)?.classList.remove('hidden');
+    }catch(__){}
+  }
+}
+
+function starHTML(val){ let s=""; for(let i=1;i<=5;i++) s+=`<span data-v="${i}" class="${i<=val?'on':''}">${i<=val?'★':'☆'}</span>`; return s; }
+
+function render(){
+  const tbody = $("#tbody"); tbody.innerHTML = "";
+  data.items.forEach((exo, idx)=>{
+    const tr = document.createElement("tr");
+    const linkText = exo.link && exo.link.trim() ? exo.link.trim() :
+       (exo.ref? `exoPrep.html?file=${exo.ref}.json` : "#");
+    tr.innerHTML = `
+      <td>${idx+1}</td>
+      <td>${editMode ? `<input class="slim" type="text" value="${exo.ref||''}" data-k="ref" data-i="${idx}">` : `<span class="ref">${exo.ref||''}</span>`}</td>
+      <td>${editMode ? `<input type="text" value="${exo.desc||''}" data-k="desc" data-i="${idx}">` : `<span class="desc">${exo.desc||''}</span>`}</td>
+      <td><div class="stars" data-i="${idx}" aria-label="Notation">${starHTML(+exo.stars||0)}</div></td>
+      <td><a class="btn btn-ghost" href="${linkText}">Lancer</a>${editMode?`<div class="small">Lien: <input class="slim short" type="text" value="${exo.link||''}" data-k="link" data-i="${idx}"></div>`:''}</td>
+      <td class="actions">
+        <button class="iconbtn" data-act="up" data-i="${idx}" title="Monter">↑</button>
+        <button class="iconbtn" data-act="down" data-i="${idx}" title="Descendre">↓</button>
+        <button class="iconbtn" data-act="dup" data-i="${idx}" title="Dupliquer">⧉</button>
+        <button class="iconbtn" data-act="del" data-i="${idx}" title="Supprimer">🗑</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+  $("#badgeCount").textContent = `${data.items.length} exercices`;
+
+  if(editMode){
+    document.querySelectorAll('input[data-k]').forEach(inp=>{
+      inp.addEventListener('input', (e)=>{
+        const i = +e.target.getAttribute('data-i');
+        const k = e.target.getAttribute('data-k');
+        data.items[i][k] = e.target.value;
+      });
+    });
+  }
+  document.querySelectorAll('.stars').forEach(st => {
+    st.addEventListener('click', (e)=>{
+      const s = e.target.closest('span[data-v]');
+      if(!s) return;
+      const val = +s.getAttribute('data-v');
+      const i = +st.getAttribute('data-i');
+      data.items[i].stars = val;
+      st.innerHTML = starHTML(val);
+    });
+  });
+  document.querySelectorAll('[data-act]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const i = +btn.getAttribute('data-i');
+      const act = btn.getAttribute('data-act');
+      if(act==='up' && i>0){ [data.items[i-1], data.items[i]] = [data.items[i], data.items[i-1]]; }
+      else if(act==='down' && i < data.items.length-1){ [data.items[i+1], data.items[i]] = [data.items[i], data.items[i+1]]; }
+      else if(act==='dup'){ const cop = JSON.parse(JSON.stringify(data.items[i])); cop.id = nextId(); data.items.splice(i+1, 0, cop); }
+      else if(act==='del'){ if(confirm('Supprimer cet exercice ?')) data.items.splice(i,1); }
+      render();
+    });
+  });
+}
+
+function nextId(){ return (data.items.reduce((m, it)=>Math.max(m, +it.id||0), 0) || 0) + 1; }
+function toggleEdit(){ editMode = !editMode; $("#editState").textContent = editMode ? 'ON' : 'OFF'; render(); }
+
+async function loadJSON(){
+  try{
+    const res = await fetch(FILE_NAME, {cache:'no-store'});
+    if(!res.ok) throw new Error('404');
+    const j = await res.json();
+    data = j && j.items ? j : {items:[]};
+  }catch(e){
+    data = { items: [] }; // vide si absent : tu peux importer/ajouter puis exporter
+  }
+  render();
+  revealTutorialIfAvailable('#btnTutorialIndex');
+}
+
+function exportJSON(){
+  const norm = JSON.parse(JSON.stringify(data));
+  norm.items.forEach(it=>{
+    if(!it.link || !it.link.trim()){
+      const ref = it.ref || "";
+      it.link = ref ? `exoPrep.html?file=${ref}.json` : "";
+    }
+  });
+  const blob = new Blob([JSON.stringify(norm,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "listeexosPrep.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importJSON(){
+  const inp = $("#fileInput");
+  inp.onchange = ()=>{
+    const f = inp.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ()=>{
+      try{
+        data = JSON.parse(r.result);
+        if(!data.items) data = {items:[]};
+        render();
+      }catch(e){ alert("Fichier JSON invalide."); }
+    };
+    r.readAsText(f);
+  };
+  inp.click();
+}
+
+let tempStars = 3;
+function bindNewStars(){
+  const holder = $("#newStars");
+  holder.addEventListener('click', (e)=>{
+    const s = e.target.closest('span[data-v]'); if(!s) return;
+    tempStars = +s.getAttribute('data-v'); holder.innerHTML = starHTML(tempStars);
+  });
+  holder.innerHTML = starHTML(tempStars);
+}
+
+function addItem(){
+  const ref = $("#newRef").value.trim();
+  const desc = $("#newDesc").value.trim();
+  let link = $("#newLink").value.trim();
+  if(!ref){ alert("Référence manquante (ex: exoPrep11)."); return; }
+  if(!link) link = `exoPrep.html?file=${ref}.json`;
+  data.items.push({id: nextId(), ref, link, desc, stars: tempStars});
+  render();
+  $("#newRef").value=''; $("#newDesc").value=''; $("#newLink").value='';
+  tempStars = 3; bindNewStars();
+}
+
+function genModelJSON(){
+  const ref = $("#newRef").value.trim() || "exoPrep11";
+  const model = {
+    "title": `${ref} — 8 phrases`,
+    "prepositions": ["à","avec","chez","dans","de","en","par","pendant","pour","sans","sous","sur","vers"],
+    "items": [
+      {"verb_infinitif":"(verbe 1)","complement":"(complément 1)","attendu":"à"},
+      {"verb_infinitif":"(verbe 2)","complement":"(complément 2)","attendu":"de"},
+      {"verb_infinitif":"(verbe 3)","complement":"(complément 3)","attendu":"en"},
+      {"verb_infinitif":"(verbe 4)","complement":"(complément 4)","attendu":"dans"},
+      {"verb_infinitif":"(verbe 5)","complement":"(complément 5)","attendu":"sur"},
+      {"verb_infinitif":"(verbe 6)","complement":"(complément 6)","attendu":"pour"},
+      {"verb_infinitif":"(verbe 7)","complement":"(complément 7)","attendu":"avec"},
+      {"verb_infinitif":"(verbe 8)","complement":"(complément 8)","attendu":"sans"}
+    ]
+  };
+  const blob = new Blob([JSON.stringify(model,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `${ref}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+document.getElementById('btnToggleEdit').onclick = toggleEdit;
+document.getElementById('btnExport').onclick = exportJSON;
+document.getElementById('btnImport').onclick = importJSON;
+document.getElementById('btnAdd').onclick = addItem;
+document.getElementById('btnGenModel').onclick = genModelJSON;
+
+bindNewStars();
+loadJSON();
+</script>
+</body>
+</html>

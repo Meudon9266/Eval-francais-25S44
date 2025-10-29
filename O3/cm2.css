@@ -1,0 +1,203 @@
+/* ======================================================
+   FORMAT CM2 INTERACTIF — Thème unifié 2025
+   ====================================================== */
+:root{
+  /* ——— Tailles ——— */
+  --ui-font: 22px;        /* police globale */
+  --consigne-font: 18px;  /* police consigne */
+
+  /* ——— Couleurs générales ——— */
+  --bg:#f5f7fb;
+  --card:#ffffff;
+  --accent:#2563eb;       /* bleu principal */
+  --accent2:#10b981;      /* vert validation */
+  --warn:#f59e0b;         /* orange signal */
+  --bad:#ef4444;          /* rouge erreur */
+
+  /* ——— Pavés & zones ——— */
+  --tile:#fcfcff;
+  --tile-border:#d7dce6;
+  --punct:#e9eef7;
+  --source:#ffe6c7;       /* orange clair */
+  --source-b:#f4b357;
+  --target:#d7f7e3;       /* vert clair */
+  --target-b:#60c28a;
+
+  /* ——— Navigation harmonisée ——— */
+  --nav-prev:#4f46e5;     /* myrtille */
+  --nav-prev-ink:#ffffff;
+  --nav-prev-hover:#4338ca;
+
+  --nav-home:#f59e0b;     /* mangue */
+  --nav-home-ink:#1f2937;
+  --nav-home-hover:#d97706;
+
+  --nav-next:#10b981;     /* menthe */
+  --nav-next-ink:#063a2f;
+  --nav-next-hover:#059669;
+
+  --nav-list:#f472b6;     /* framboise (liste des exos) */
+  --nav-list-hover:#ec4899;
+
+  --btn-ring:#93c5fd;     /* anneau focus accessible */
+  --btn-disabled-bg:#e5e7eb;
+  --btn-disabled-ink:#9ca3af;
+}
+
+/* ——— Structure de base ——— */
+html,body{
+  margin:0; padding:0; background:var(--bg);
+  font-size:var(--ui-font);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;
+}
+h1{font-size:1.2em;margin:0 0 .5rem}
+.wrap{max-width:1100px;margin:20px auto;padding:16px}
+.board{
+  background:var(--card);border-radius:14px;padding:16px;
+  box-shadow:0 4px 14px rgba(0,0,0,.06);margin-bottom:12px;
+}
+.head{position:relative}
+.label{font-weight:700;margin-bottom:8px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.zone{display:flex;gap:12px;flex-wrap:wrap}
+.column{flex:1 1 480px}
+.note{color:#334155}
+.small{font-size:.85em}
+.pill{display:inline-block;background:#eef2ff;color:#1f2937;
+  border:1px solid #c7d2fe;border-radius:999px;
+  padding:2px 10px;margin-left:6px;font-size:.8em}
+
+/* ——— Pavés ——— */
+.tile{
+  user-select:none; cursor:grab;
+  border:2px solid var(--tile-border);
+  padding:10px 12px; border-radius:12px; background:var(--tile);
+  box-shadow:0 2px 0 rgba(0,0,0,.03);
+  font-weight:700; min-width:52px; text-align:center;
+  transition:transform .05s ease-in-out;
+}
+.tile:active{cursor:grabbing; transform:scale(0.98)}
+.tile.punct{background:#fff}
+.tile.helper{opacity:.8}
+.tile.as-source{ background:var(--source); border-color:var(--source-b); }
+.tile.as-target{ background:var(--target); border-color:var(--target-b); }
+
+/* ——— Slots ——— */
+.slot{
+  min-width:64px; min-height:52px;
+  padding:6px 8px; border:2px dashed var(--tile-border);
+  border-radius:12px; background:#fff;
+  display:flex; align-items:center; justify-content:center;
+}
+.slot.punct-only{background:var(--punct)}
+
+/* ——— Palette ——— */
+.palette{display:flex;flex-wrap:wrap;gap:10px}
+
+/* ——— Boutons génériques ——— */
+.btn{
+  height:44px; padding:0 16px;
+  border-radius:12px; border:1px solid transparent;
+  background:var(--accent); color:#fff;
+  font-weight:800; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center;
+  text-decoration:none;  /* utile pour les <a class="btn"> */
+}
+.btn.ghost{
+  background:#fff; color:#111;
+  border-color:var(--tile-border);
+}
+.smallbtn{ height:38px; line-height:38px; padding:0 12px; }
+
+/* ——— Sélecteur CM2 ——— */
+.select.cm2{
+  height:44px; border-radius:12px;
+  border:1px solid var(--tile-border); background:#fff; padding:0 12px;
+  appearance:none; -webkit-appearance:none; -moz-appearance:none;
+  background-image:none;
+}
+
+/* ——— Messages / champs / corbeille ——— */
+.msg{margin-top:8px;font-weight:900}
+.ok{color:var(--accent2)}
+.ko{color:var(--bad)}
+.textline{
+  flex:1; min-width:260px; height:44px;
+  border-radius:12px; border:1px solid var(--tile-border);
+  padding:0 12px; background:#fff;
+}
+.trash{
+  border:2px dashed var(--bad); border-radius:14px;
+  padding:18px; min-height:72px;
+  display:flex; align-items:center; justify-content:center;
+  background:#fff;
+}
+.trash.hi{ background:#fee2e2 }
+
+/* ——— Barre A− / A+ + consigne ——— */
+.fontbar{ display:flex; gap:8px; margin:8px 0 4px; }
+.consigne{
+  display:flex; align-items:center; gap:12px;
+  color:#b91c1c; font-weight:900; font-size:var(--consigne-font);
+  background:#fff; border-left:5px solid #ef4444;
+  padding:10px 12px; border-radius:10px; margin:8px 0;
+}
+.consigne-btn{
+  margin-left:auto; height:36px; padding:0 12px; border-radius:10px;
+  border:1px solid var(--tile-border);
+  background:#fff; cursor:pointer; font-weight:900;
+}
+.consigne strong{ color:#b91c1c; }
+
+/* ======================================================
+   BARRE DE NAVIGATION CM2
+   ====================================================== */
+.navbar{
+  display:flex; gap:10px; justify-content:space-between;
+  align-items:center; margin:6px 0 2px;
+}
+.navleft,.navright{
+  display:flex; gap:10px; align-items:center;
+}
+.navinfo{ font-size:.85em; color:#475569; }
+
+/* Boutons nav */
+.navbtn{
+  min-width:130px; height:44px; border-radius:12px;
+  font-weight:800; border:none;
+  box-shadow:0 2px 0 rgba(0,0,0,.05);
+  transition:transform .05s ease, background-color .15s ease;
+}
+.navbtn:active{ transform: translateY(1px); }
+.navbtn:focus-visible{
+  outline:3px solid var(--btn-ring);
+  outline-offset:2px; border-radius:12px;
+}
+
+/* Couleurs de chaque bouton */
+.nav-prev{
+  background:var(--nav-prev); color:var(--nav-prev-ink);
+}
+.nav-prev:hover{ background:var(--nav-prev-hover); }
+
+.nav-home{
+  background:var(--nav-home); color:var(--nav-home-ink);
+}
+.nav-home:hover{ background:var(--nav-home-hover); }
+
+.nav-next{
+  background:var(--nav-next); color:var(--nav-next-ink);
+}
+.nav-next:hover{ background:var(--nav-next-hover); }
+
+.nav-list{
+  background:var(--nav-list); color:#fff;
+}
+.nav-list:hover{ background:var(--nav-list-hover); }
+
+/* Désactivation */
+.navbtn[disabled]{
+  background:var(--btn-disabled-bg)!important;
+  color:var(--btn-disabled-ink)!important;
+  cursor:not-allowed; box-shadow:none;
+}

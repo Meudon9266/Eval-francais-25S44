@@ -1,0 +1,74 @@
+<!-- ============================================================
+     cm2-tools.html — Fragment standard du format CM2 interactif
+     Compatible inclusion dynamique (cm2.js) OU affichage direct
+     ============================================================ -->
+<div class="cm2-tools">
+
+  <!-- === Contrôles d’affichage global === -->
+  <div class="fontbar">
+    <button id="decFont" class="btn ghost smallbtn">A−</button>
+    <button id="incFont" class="btn ghost smallbtn">A+</button>
+  </div>
+
+  <!-- === Consigne standard === -->
+  <p class="consigne" id="consigneText">
+    <strong>Consigne :</strong>
+    Lis bien l’énoncé puis effectue l’exercice.
+    <button id="incConsigne" class="consigne-btn" title="Augmenter la consigne">A+</button>
+  </p>
+
+  <!-- === Barre de navigation CM2 === -->
+  <div class="board navbar">
+    <div class="navleft">
+      <button class="btn navbtn nav-prev">← Précédent</button>
+      <button class="btn navbtn nav-home">⟲ Accueil</button>
+    </div>
+
+    <div class="navinfo nav-info">Page …</div>
+
+    <div class="navright">
+      <a class="btn navbtn nav-list" href="index.html">📚 Liste des exercices</a>
+      <button class="btn navbtn nav-next">Suivant →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     Script minimal intégré pour compatibilité double mode
+     (1) Inclusion dynamique via cm2.js  → aucun effet
+     (2) Ouverture directe dans navigateur → affichage autonome
+     ============================================================ -->
+<script>
+(function(){
+  // Vérifie si la page est chargée directement (sans cm2.js)
+  const standalone = !document.currentScript.closest("body [data-include]");
+  if(standalone){
+    window.cm2ToolsStandalone = true;
+    // Crée le style minimal si cm2.css n'est pas chargé
+    if(!document.querySelector('link[href*="cm2.css"]')){
+      const css = document.createElement("style");
+      css.textContent = `
+        body{background:#f5f7fb;font-family:system-ui;padding:20px;}
+        .btn{display:inline-block;padding:8px 14px;margin:4px;
+             border-radius:10px;background:#2563eb;color:#fff;
+             font-weight:700;border:none;cursor:pointer;}
+        .board{background:#fff;padding:14px;border-radius:12px;
+               box-shadow:0 2px 8px rgba(0,0,0,.1);margin:10px 0;}
+        .consigne{color:#b91c1c;font-weight:900;background:#fff;
+                  border-left:5px solid #ef4444;padding:8px 12px;
+                  border-radius:10px;margin:12px 0;}
+        .fontbar{display:flex;gap:8px;margin-bottom:6px;}
+        .navbar{display:flex;justify-content:space-between;align-items:center;}
+        .navleft,.navright{display:flex;gap:8px;}
+      `;
+      document.head.appendChild(css);
+    }
+    // Message visuel
+    const msg = document.createElement("div");
+    msg.textContent = "⚙️ cm2-tools.html ouvert en mode autonome (test visuel)";
+    msg.style.cssText = "color:#555;margin:10px 0 20px;font-style:italic;";
+    document.body.insertBefore(msg, document.body.firstChild);
+    console.warn("cm2-tools.html est affiché seul (mode autonome de test)");
+  }
+})();
+</script>

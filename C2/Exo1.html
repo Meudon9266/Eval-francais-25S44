@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>C2 – Passé composé (avoir) • Exercice interactif</title>
+<style>
+  :root{ --base-size:18px; --ok:#2e7d32; --ko:#c62828; --hl:#fff3bf; --bg:#f7fbff; }
+  html,body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;font-size:var(--base-size);line-height:1.5;color:#111}
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px;background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:5}
+  .btn{appearance:none;border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:9px 12px;cursor:pointer}
+  .btn.primary{background:#2563eb;border-color:#2563eb;color:#fff}
+  .btn:hover{background:#f8fafc}
+  .wrap{display:grid;grid-template-columns:minmax(280px,1fr) 1.4fr;gap:16px;max-width:1100px;margin:14px auto;padding:0 14px 24px}
+  .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 8px 18px rgba(0,0,0,.04)}
+  .col{padding:16px}
+  h1{font-size:1.2rem;margin:.2rem 0 .6rem}
+  /* Colonne gauche : texte source */
+ #sourceBox{  max-height: none; overflow: visible;  padding: 0 12px 12px;}
+  .srcSent{padding:8px 6px;border-bottom:1px dashed #eef2f7}
+  .srcSent.active{background:var(--hl);border-radius:8px}
+  .muted{color:#64748b}
+  /* Colonne droite : exercice */
+  .exo p{margin:.6rem 0}
+  input.blk{
+    min-width:9ch;padding:8px 10px;margin:2px 4px;border:2px solid #d1d5db;border-radius:10px;outline:none;
+  }
+  input.blk:focus{border-color:#2563eb;background:#f8fafc}
+  input.ok{border-color:var(--ok);background:#edf7ee}
+  input.ko{border-color:var(--ko);background:#fde8e8}
+  .feedback{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;background:#e5f0ff;color:#1e40af;font-weight:600}
+</style>
+</head>
+<body>
+  <div class="bar">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <a class="btn" href="index.html">⟵ Retour (index.html)</a>
+      <span class="pill">C2 • Passé composé (auxiliaire <strong>avoir</strong>)</span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="btn" id="less">A−</button>
+      <button class="btn" id="more">A+</button>
+      <button class="btn primary" id="check">Vérifier</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <!-- Colonne : texte source -->
+    <div class="card col">
+      <h1>Texte à transformer (présent → passé composé)</h1>
+      <div id="sourceBox" aria-label="Texte source, défilement automatique">
+        <div class="srcSent" id="s1">1. Dans la tempête, le vieux marin <strong>a</strong> de la chance.</div>
+        <div class="srcSent" id="s2">2. Il <strong>prend</strong> une bouée et il <strong>peut</strong> quitter le navire.</div>
+        <div class="srcSent" id="s3">3. Arrivé sur une île, il <strong>voit</strong> deux murs.</div>
+        <div class="srcSent" id="s4">4. Un filet <strong>emporte</strong> le marin vers le mur blanc.</div>
+        <div class="srcSent" id="s5">5. Là, il <strong>voit</strong> des habitants massés dans la cour du château.</div>
+        <div class="srcSent" id="s6">6. Le marin <strong>dit</strong> à Axel : « Je peux t’aider ».</div>
+        <div class="srcSent" id="s7">7. Il <strong>rencontre</strong> les deux rois</div>
+        <div class="srcSent" id="s8">8. et les habitants de l’île <strong>font</strong> la paix.</div>
+        <div class="srcSent" id="s9">9. Puis un tourbillon <strong>emporte</strong> à nouveau le marin</div>
+        <div class="srcSent" id="s10">10. sur la plage.</div>
+      </div>
+      <p class="muted">Astuce : clique dans un champ de réponse pour que la phrase correspondante monte en haut de cette colonne.</p>
+    </div>
+
+    <!-- Colonne : exercice -->
+    <div class="card col">
+      <h1>Complète au passé composé (avec <em>avoir</em>)</h1>
+      <div class="exo" id="exo">
+        <p>◆ Dans la tempête, le vieux marin
+          <input class="blk" data-id="1" data-sent="1" data-answer="a eu" aria-label="réponse 1">
+          de la chance. Il
+          <input class="blk" data-id="2" data-sent="2" data-answer="a pris" aria-label="réponse 2">
+          une bouée et il
+          <input class="blk" data-id="3" data-sent="2" data-answer="a pu" aria-label="réponse 3">
+          quitter le navire. Arrivé sur une île, il
+          <input class="blk" data-id="4" data-sent="3" data-answer="a vu" aria-label="réponse 4">
+          deux murs. Un filet
+          <input class="blk" data-id="5" data-sent="4" data-answer="a emporté" aria-label="réponse 5">
+          le marin vers le mur blanc. Là, il
+          <input class="blk" data-id="6" data-sent="5" data-answer="a vu" aria-label="réponse 6">
+          des habitants massés dans la cour du château. Le marin
+          <input class="blk" data-id="7" data-sent="6" data-answer="a dit" aria-label="réponse 7">
+          à Axel : « Je peux t’aider ». Il
+          <input class="blk" data-id="8" data-sent="7" data-answer="a rencontré" aria-label="réponse 8">
+          les deux rois et les habitants de l’île
+          <input class="blk" data-id="9" data-sent="8" data-answer="ont fait" aria-label="réponse 9">
+          la paix. Puis un tourbillon
+          <input class="blk" data-id="10" data-sent="9" data-answer="a emporté" aria-label="réponse 10">
+          à nouveau le marin sur la plage.
+        </p>
+      </div>
+      <div class="feedback">
+        <strong id="scoreline">Score : –</strong>
+        <span id="attemptline" class="muted">Tentatives : 0</span>
+        <button class="btn" id="resetColors">Réessayer</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(()=> {
+  const $ = (s,ctx=document)=>ctx.querySelector(s);
+  const $$ = (s,ctx=document)=>Array.from(ctx.querySelectorAll(s));
+  const inputs = $$('#exo input.blk');
+  const sourceBox = $('#sourceBox');
+  const btnCheck = $('#check');
+  const btnReset = $('#resetColors');
+  const scoreline = $('#scoreline');
+  const attemptline = $('#attemptline');
+  const btnMore = $('#more');
+  const btnLess = $('#less');
+
+  const LS_ATTEMPTS = 'C2_pc_avoir_attempts';
+  const LS_FONT = 'C2_pc_font';
+
+  const norm = s => (s||'').toString().trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
+
+  function loadAttempts(){ try{ return JSON.parse(localStorage.getItem(LS_ATTEMPTS)||'[]'); }catch(_){ return []; } }
+  function saveAttempts(arr){ localStorage.setItem(LS_ATTEMPTS, JSON.stringify(arr)); }
+
+  // Liaison focus -> scroll de la phrase source
+  inputs.forEach(inp=>{
+    inp.addEventListener('focus', ()=> highlightSentence(parseInt(inp.dataset.sent,10)));
+  });
+  function highlightSentence(n){
+    $$('.srcSent', sourceBox).forEach(el=>el.classList.remove('active'));
+    const target = $('#s'+n);
+    if(!target) return;
+    target.classList.add('active');
+    //target.scrollIntoView({behavior:'smooth', block:'start'});//
+  }
+  // Première mise en avant
+  highlightSentence(1);
+
+  // Vérification
+  function checkOnce(){
+    let correct=0, total=inputs.length;
+    const wrong=[];
+    inputs.forEach(inp=>{
+      const ok = norm(inp.value) === norm(inp.dataset.answer);
+      inp.classList.remove('ok','ko');
+      inp.classList.add(ok?'ok':'ko');
+      if(ok) correct++; else wrong.push({ id: inp.dataset.id, entered: (inp.value||'').trim(), expected: inp.dataset.answer });
+    });
+    const score = Math.round(100*correct/total);
+    const now = new Date();
+    const attempt = {
+      ts: now.toISOString(),
+      nice: now.toLocaleString(),
+      score, correct, total,
+      wrong
+    };
+    const all = loadAttempts();
+    all.push(attempt);
+    saveAttempts(all);
+
+    scoreline.textContent = `Score : ${correct}/${total} (${score}%)`;
+    attemptline.textContent = `Tentatives : ${all.length}`;
+
+    // Téléchargement automatique du rapport cumulé
+    const report = buildReportHTML(all);
+    autoDownload('C2Exo1.html', report, 'text/html;charset=utf-8');
+  }
+
+  // Rapport HTML (sans affichage in-page)
+  function buildReportHTML(all){
+    const rows = all.map((a,i)=>{
+      const list = a.wrong.length
+        ? a.wrong.map(w=> `<li><strong>${w.id}</strong> : saisi “${esc(w.entered)}” / attendu “${esc(w.expected)}”</li>`).join('')
+        : '<li>Aucune erreur.</li>';
+      return `<section style="margin:10px 0 18px">
+        <h3 style="margin:0 0 6px">Tentative ${i+1} – ${a.nice} — Score ${a.correct}/${a.total} (${a.score}%)</h3>
+        <ul style="margin:0 0 0 18px">${list}</ul>
+      </section>`;
+    }).join('\n');
+    return `<!doctype html><html lang="fr"><head><meta charset="utf-8">
+      <title>C2 – Rapport erreurs</title>
+      <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;margin:24px;line-height:1.5}
+      h1{font-size:20px;margin:0 0 10px} h3{font-size:16px}</style></head>
+      <body><h1>C2 – Passé composé (avoir) • Rapport des erreurs</h1>
+      <p>Le rapport cumule toutes les tentatives ; seules les mauvaises réponses sont listées.</p>
+      ${rows || '<p>Aucune tentative enregistrée.</p>'}
+      </body></html>`;
+  }
+  function autoDownload(filename, content, mime){
+    const blob = new Blob([content], {type:mime});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 0);
+  }
+  const esc = s => (s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+
+  // A+ / A− mémorisés
+  function setFont(px){ document.documentElement.style.setProperty('--base-size', px+'px'); localStorage.setItem(LS_FONT, String(px)); }
+  $('#more').addEventListener('click', ()=>{ const cur=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--base-size')); setFont(Math.min(cur+2,28)); });
+  $('#less').addEventListener('click', ()=>{ const cur=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--base-size')); setFont(Math.max(cur-2,12)); });
+  const saved = parseInt(localStorage.getItem(LS_FONT)||'0'); if(saved) setFont(saved);
+
+  // Boutons
+  $('#check').addEventListener('click', checkOnce);
+  btnReset.addEventListener('click', ()=> inputs.forEach(i=> i.classList.remove('ok','ko')));
+
+})();
+</script>
+</body>
+</html>

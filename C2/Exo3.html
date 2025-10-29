@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Impératif présent – Consignes à transformer</title>
+<style>
+:root{--base-size:18px;--ok:#2e7d32;--ko:#c62828;--bg:#f7fbff;}
+html,body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;font-size:var(--base-size);line-height:1.5;color:#111}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:5}
+.btn{appearance:none;border:1px solid #d1d5db;background:#fff;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:.9rem}
+.btn:hover{background:#f8fafc}
+.btn.primary{background:#2563eb;border-color:#2563eb;color:#fff}
+.btn.small{font-size:.8rem;padding:5px 8px;border-radius:6px}
+.wrap{max-width:960px;margin:18px auto;padding:0 14px 30px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 8px 18px rgba(0,0,0,.04);padding:20px}
+h1{font-size:1.2rem;margin:.2rem 0 1rem}
+p{margin:.6rem 0}
+input.blk{min-width:9ch;padding:8px 10px;margin:2px 4px;border:2px solid #d1d5db;border-radius:10px;outline:none}
+input.blk:focus{border-color:#2563eb;background:#f8fafc}
+input.ok{border-color:var(--ok);background:#edf7ee}
+input.ko{border-color:var(--ko);background:#fde8e8}
+.feedback{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.muted{color:#64748b;font-size:.9rem}
+#resetAll{background:none;border:none;color:#999;font-size:.8rem;text-decoration:underline;cursor:pointer;margin-left:10px}
+#resetAll:hover{color:#333}
+.hint{color:#475569;font-size:.92rem}
+</style>
+</head>
+<body>
+<!-- A+A- + Accueil + Vérifier -->
+<div class="bar">
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <a class="btn small" href="index.html" title="Accueil">🏠 Accueil</a>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+    <button class="btn small" id="less" style="background:#fef3c7;border-color:#fcd34d">A−</button>
+    <button class="btn small" id="more" style="background:#dbeafe;border-color:#60a5fa">A+</button>
+    <button class="btn primary" id="check">Vérifier</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="card">
+    <h1>Conjugue les verbes à l’impératif présent</h1>
+
+    <!-- Série 1 (image 1) -->
+    <div id="exo">
+      <p class="hint"><em>Transforme les consignes : « devez / devons / dois » → forme à l’impératif.</em></p>
+      <p>1) Vous devez prendre ces comprimés 3 fois par jour.<br>
+         ➜ <input class="blk" data-id="1" data-answers="prenez"> ces comprimés 3 fois par jour.
+      </p>
+      <p>2) Nous devons tous combattre l’analphabétisme.<br>
+         ➜ <input class="blk" data-id="2" data-answers="combattons"> tous l’analphabétisme.
+      </p>
+      <p>3) Tu dois mettre ton manteau.<br>
+         ➜ <input class="blk" data-id="3" data-answers="mets"> ton manteau.
+      </p>
+      <p>4) Vous devez faire de ce monde un paradis.<br>
+         ➜ <input class="blk" data-id="4" data-answers="faites"> de ce monde un paradis.
+      </p>
+
+      <!-- Série 2 (image 2) -->
+      <p>5) Tu ne dois pas ouvrir la porte au chat.<br>
+         ➜ <input class="blk" data-id="5" data-answers="n'ouvre|nouvre|n ouvre"> pas la porte au chat.
+      </p>
+      <p>6) Tu dois être prudent sur ton vélo.<br>
+         ➜ <input class="blk" data-id="6" data-answers="sois"> prudent sur ton vélo.
+      </p>
+    </div>
+
+    <div class="feedback">
+      <strong id="scoreline">Score : –</strong>
+      <span id="attemptline" class="muted">Tentatives : 0</span>
+      <button class="btn small" id="resetColors">Réessayer</button>
+      <button id="resetAll" title="Réinitialiser tout">Réinitialiser le score cumulé</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{
+  const $=(s,ctx=document)=>ctx.querySelector(s);
+  const $$=(s,ctx=document)=>Array.from(ctx.querySelectorAll(s));
+
+  const inputs=$$('#exo input.blk');
+  const btnCheck=$('#check');
+  const scoreline=$('#scoreline');
+  const attemptline=$('#attemptline');
+  const btnReset=$('#resetColors');
+  const btnResetAll=$('#resetAll');
+  const btnMore=$('#more');
+  const btnLess=$('#less');
+
+  const LS_ATTEMPTS='ExI_imperatifConsignes_attempts_v1';
+  const LS_FONT='ExI_imperatifConsignes_font_v1';
+
+  // normalisation tolérante : casse, accents, espaces, apostrophes
+  const norm=s=>(s||'').toString()
+    .trim()
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // accents
+    .replace(/[’']/g,'')                              // apostrophes tolérées
+    .replace(/\s+/g,' ');                             // espaces multiples
+
+  function parseAnswers(attr){
+    // plusieurs réponses possibles séparées par |
+    return (attr||'').split('|').map(a=>a.trim()).filter(Boolean);
+  }
+
+  const loadAttempts=()=>{try{return JSON.parse(localStorage.getItem(LS_ATTEMPTS)||'[]');}catch(_){return[];}};
+  const saveAttempts=a=>localStorage.setItem(LS_ATTEMPTS,JSON.stringify(a));
+  const resetAttempts=()=>localStorage.removeItem(LS_ATTEMPTS);
+
+  function checkOnce(){
+    let correct=0,total=inputs.length;
+    const wrong=[];
+    inputs.forEach(inp=>{
+      const expectedList=parseAnswers(inp.dataset.answers).map(norm);
+      const valN=norm(inp.value);
+      const ok=expectedList.includes(valN);
+      inp.classList.remove('ok','ko');
+      inp.classList.add(ok?'ok':'ko');
+      if(ok) correct++;
+      else wrong.push({id:inp.dataset.id, entered:(inp.value||'').trim(), expected: inp.dataset.answers});
+    });
+
+    const score=Math.round(100*correct/total);
+    const now=new Date();
+    const attempt={ts:now.toISOString(),nice:now.toLocaleString(),score,correct,total,wrong};
+    const all=loadAttempts(); all.push(attempt); saveAttempts(all);
+
+    scoreline.textContent=`Score : ${correct}/${total} (${score}%)`;
+    attemptline.textContent=`Tentatives : ${all.length}`;
+
+    // teleRap : téléchargement automatique après chaque vérification
+    teleRap(all);
+  }
+
+  function teleRap(all){
+    const rows=all.map((a,i)=>{
+      const w=a.wrong.length
+        ? a.wrong.map(w=>`<li><strong>${w.id}</strong> : saisi “${esc(w.entered)}” / attendu “${esc(w.expected)}”</li>`).join('')
+        : '<li>Aucune erreur.</li>';
+      return `<section style="margin:10px 0 18px">
+        <h3 style="margin:0 0 6px">Tentative ${i+1} – ${a.nice} — Score ${a.correct}/${a.total} (${a.score}%)</h3>
+        <ul style="margin:0 0 0 18px">${w}</ul>
+      </section>`;
+    }).join('\n');
+
+    const html=`<!doctype html><html lang="fr"><head><meta charset="utf-8">
+      <title>Rapport – Impératif (consignes)</title>
+      <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;margin:24px;line-height:1.5}
+      h1{font-size:20px;margin:0 0 10px} h3{font-size:16px}</style></head>
+      <body><h1>Rapport des erreurs – Impératif (consignes)</h1>
+      <p>Le rapport cumule toutes les tentatives. Seules les mauvaises réponses sont listées.</p>
+      ${rows || '<p>Aucune tentative enregistrée.</p>'}
+      </body></html>`;
+
+    const who=(prompt("Prénom de l’élève (facultatif) :","")||"").trim();
+    const fname=who?sanitize(who)+"-ImperatifConsignes.html":"C2Exo4.html";
+    download(fname,html,"text/html;charset=utf-8");
+  }
+
+  // utilitaires
+  function esc(s){return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function sanitize(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9_-]+/g,'_');}
+  function download(name,content,mime){
+    const blob=new Blob([content],{type:mime});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download=name;
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{URL.revokeObjectURL(url); a.remove();},0);
+  }
+
+  // reset couleurs (réessayer)
+  btnReset.addEventListener('click',()=>inputs.forEach(i=>i.classList.remove('ok','ko')));
+  // reset total (score cumulé)
+  btnResetAll.addEventListener('click',()=>{ if(confirm("Réinitialiser toutes les tentatives enregistrées ?")){ resetAttempts(); alert("Score cumulé réinitialisé."); attemptline.textContent="Tentatives : 0"; scoreline.textContent="Score : –"; } });
+
+  // A+A- (persistance)
+  function setFont(px){ document.documentElement.style.setProperty('--base-size',px+'px'); localStorage.setItem(LS_FONT,String(px)); }
+  $('#more').addEventListener('click',()=>{ const cur=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--base-size')); setFont(Math.min(cur+2,28)); });
+  $('#less').addEventListener('click',()=>{ const cur=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--base-size')); setFont(Math.max(cur-2,12)); });
+  const saved=parseInt(localStorage.getItem(LS_FONT)||'0'); if(saved) setFont(saved);
+
+  // action
+  $('#check').addEventListener('click',checkOnce);
+})();
+</script>
+</body>
+</html>

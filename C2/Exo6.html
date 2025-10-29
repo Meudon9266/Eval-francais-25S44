@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ExI – Conjugue au présent (saisie libre)</title>
+<style>
+  :root{ --base:18px; }
+  html{ font-size:var(--base); }
+  body{ margin:0; font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif; background:#e6f1fb; }
+  .wrap{ max-width:980px; margin:28px auto; background:#fff; border-radius:18px; box-shadow:0 8px 28px rgba(0,0,0,.08); padding:24px 22px; }
+  h1{ display:flex; gap:.6rem; align-items:center; font-size:1.25rem; margin:0 0 10px; }
+  .bar{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
+  .btn{ appearance:none; border:1px solid #d6d9dd; background:#f7fafc; padding:.45rem .7rem; border-radius:999px; cursor:pointer; font-weight:600; }
+  .btn:hover{ background:#eef4fb; }
+  .btn.primary{ background:#3488ff; color:#fff; border-color:#3488ff; }
+  .btn.danger{ background:#fff3f3; color:#b00020; border-color:#ffd7d7; }
+  .btn.ghost{ background:#fff; }
+  .badge{ display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .6rem; border-radius:999px; background:#eef5ff; border:1px solid #d7e6ff; font-weight:600; }
+  .card{ border:1px solid #e9ecef; border-radius:14px; box-shadow:0 6px 16px rgba(0,0,0,.04); background-color:#fff; padding:18px 16px; margin:14px 0; }
+  .row{ display:flex; gap:.6rem; align-items:baseline; flex-wrap:wrap; line-height:1.7; }
+  .qnum{ background:#eaf3ff; color:#1c4a88; font-weight:700; border-radius:8px; padding:.1rem .45rem; }
+  .hole{ display:inline-flex; align-items:center; min-width:8ch; }
+  input[type="text"]{
+    font:inherit; border:2px solid #b9c6d1; padding:.3rem .5rem; border-radius:12px;
+    background:#f2f8ff; outline:none; transition:border-color .15s, background .15s, box-shadow .15s;
+  }
+  input[type="text"]:focus{ border-color:#3488ff; background:#fff; box-shadow:0 0 0 3px rgba(52,136,255,.15); }
+  input.correct{ background:#e9fbef; border-color:#2f9e44; }
+  input.wrong{ background:#fff3f3; border-color:#b00020; }
+  .hint{ color:#6b7280; font-size:.95rem; margin-top:.2rem; }
+  .score{ font-weight:800; }
+  .footer{ margin-top:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.6rem; }
+  details.tele{ margin-top:18px; }
+  details.tele summary{ cursor:pointer; user-select:none; font-weight:700; }
+  table{ width:100%; border-collapse:collapse; font-size:.95rem; }
+  th,td{ padding:.45rem .5rem; border-bottom:1px solid #eef1f4; vertical-align:top; }
+  th{ text-align:left; background:#f7fbff; }
+  .muted{ color:#6b7280; }
+  .mini{ font-size:.9em; opacity:.9; }
+  .small{ font-size:.85em; }
+  .right{ margin-left:auto; }
+  .pill{ padding:.15rem .45rem; border-radius:999px; background:#eef7ee; color:#1b6b2c; border:1px solid #d6f1da; font-weight:700; }
+  .pill.bad{ background:#fff1f1; color:#8a0a0a; border-color:#ffd2d2; }
+  .toolbar{ display:flex; gap:.4rem; }
+  .hide{ display:none !important; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>➤ Conjugue les verbes au présent (saisie)</h1>
+
+    <div class="bar">
+      <span class="badge">Score : <span id="score" class="score">0</span>/<span id="total">0</span></span>
+      <span class="badge">Cumulé : <span id="cumule">0</span></span>
+      <div class="toolbar right">
+        <button class="btn" id="aMoins">A-</button>
+        <button class="btn" id="aPlus">A+</button>
+        <a class="btn ghost" href="index.html">Accueil</a>
+        <button class="btn danger" id="resetAll" title="Effacer score cumulé & journal">reset</button>
+      </div>
+    </div>
+
+    <div id="questions"></div>
+
+    <div class="footer">
+      <div class="toolbar">
+        <button class="btn primary" id="verifier">Vérifier</button>
+        <button class="btn" id="reessayer">Réessayer la page</button>
+        <button class="btn" id="teleRapBtn">TeleRap</button>
+      </div>
+      <div class="small muted">Tolérance typographique : insensibilité à la casse, espaces multiples ignorés, apostrophes normales/typographiques unifiées.</div>
+    </div>
+
+    <details class="tele" id="telePanel">
+      <summary>Journal TeleRap (toutes réponses, bonnes et fausses)</summary>
+      <div id="teleWrap"></div>
+    </details>
+  </div>
+
+<script>
+/* ====== Données de l'exercice ====== */
+const ITEMS = [
+  { id:"q1", txt:"Nous (prendre) ___ des billets pour le match de basket.", expected:"prenons" },
+  { id:"q2", txt:"Je (pouvoir) ___ voir les joueurs de près.", expected:"peux" },
+  { id:"q3", txt:"Nous (faire) ___ nos devoirs.", expected:"faisons" },
+  { id:"q4", txt:"Que (dire) ___-tu ?", expected:"dis" },
+  { id:"q5a", txt:"Les hirondelles (partir) ___ à l’automne", expected:"partent" },
+  { id:"q5b", txt:"et (revenir) ___ au printemps.", expected:"reviennent" },
+  { id:"q6", txt:"Elle (vouloir) ___ rentrer tôt.", expected:"veut" },
+];
+
+/* ====== Constantes localStorage ====== */
+const LS_SCORE_CUMULE = "ExI_present_saisie_scoreCumule";
+const LS_TELERAP      = "ExI_present_saisie_teleRapLog";
+
+/* ====== Helpers tolérance typographique ====== */
+function norm(s){
+  return (s ?? "")
+    .toLowerCase()
+    .normalize("NFD").replace(/\p{Diacritic}/gu,"") // enlève accents si jamais
+    .replace(/[’'`]/g,"'")                         // unifie apostrophes
+    .replace(/\s+/g," ")                            // espaces multiples
+    .trim();
+}
+
+/* ====== Construction DOM ====== */
+const $q = document.getElementById("questions");
+const totalEl = document.getElementById("total");
+const scoreEl = document.getElementById("score");
+const cumuleEl= document.getElementById("cumule");
+totalEl.textContent = ITEMS.length;
+
+function makeRow(i, item){
+  const card = document.createElement("div");
+  card.className = "card";
+
+  const row  = document.createElement("div");
+  row.className = "row";
+
+  const num = document.createElement("span");
+  num.className = "qnum";
+  num.textContent = i+1;
+
+  const before = document.createElement("span");
+  const after  = document.createElement("span");
+  const hole   = document.createElement("span"); hole.className="hole";
+
+  // Sépare le texte autour de ___
+  const parts = item.txt.split("___");
+  before.textContent = parts[0] ?? "";
+  after.textContent  = parts[1] ?? "";
+
+  const input = document.createElement("input");
+  input.type = "text"; input.autocomplete = "off";
+  input.id = item.id; input.dataset.expected = item.expected;
+
+  hole.appendChild(input);
+  row.append(num, before, hole, after);
+  card.append(row);
+
+  const hint = document.createElement("div");
+  hint.className = "hint";
+  hint.id = "hint_"+item.id;
+  hint.textContent = "Saisis la forme conjuguée correcte (présent).";
+  card.append(hint);
+
+  return card;
+}
+
+ITEMS.forEach((it,idx)=> $q.appendChild(makeRow(idx,it)));
+
+/* ====== A+ / A- ====== */
+const root = document.documentElement;
+document.getElementById("aPlus").onclick = ()=> {
+  const cur = parseFloat(getComputedStyle(root).getPropertyValue("--base"));
+  root.style.setProperty("--base", Math.min(cur+2, 28)+"px");
+};
+document.getElementById("aMoins").onclick = ()=> {
+  const cur = parseFloat(getComputedStyle(root).getPropertyValue("--base"));
+  root.style.setProperty("--base", Math.max(cur-2, 12)+"px");
+};
+
+/* ====== Chargement cumulé ====== */
+function getCumule(){ return parseInt(localStorage.getItem(LS_SCORE_CUMULE)||"0",10); }
+function setCumule(v){ localStorage.setItem(LS_SCORE_CUMULE,String(v)); cumuleEl.textContent=v; }
+cumuleEl.textContent = getCumule();
+
+/* ====== Vérification ====== */
+function verifier(){
+  let score = 0;
+  const rows = [];
+
+  ITEMS.forEach(item=>{
+    const inp = document.getElementById(item.id);
+    const got = norm(inp.value);
+    const exp = norm(item.expected);
+
+    const ok = (got === exp);
+    if(ok) { score++; inp.classList.remove("wrong"); inp.classList.add("correct"); }
+    else   { inp.classList.remove("correct"); inp.classList.add("wrong"); }
+
+    const hint = document.getElementById("hint_"+item.id);
+    hint.innerHTML = ok
+      ? "✅ Correct."
+      : "❌ Attendu : <b>"+item.expected+"</b> — Saisi : « "+(inp.value || "∅") +" »";
+
+    rows.push({ id:item.id, phrase:item.txt.replace("___", "…"), saisi:inp.value, attendu:item.expected, ok });
+  });
+
+  scoreEl.textContent = score;
+
+  // maj cumulé
+  const newCum = getCumule() + score;
+  setCumule(newCum);
+
+  // TeleRap (journalise toutes les réponses)
+  pushTeleRap({
+    when: new Date().toISOString(),
+    score, total: ITEMS.length,
+    rows
+  });
+
+  // Déploie le panneau TeleRap si bouton cliqué
+  renderTeleRap();
+}
+
+document.getElementById("verifier").onclick = verifier;
+
+/* ====== Réessayer (page seulement) ====== */
+document.getElementById("reessayer").onclick = ()=>{
+  scoreEl.textContent = "0";
+  ITEMS.forEach(item=>{
+    const inp = document.getElementById(item.id);
+    inp.classList.remove("correct","wrong");
+    // On laisse les saisies pour que l'élève puisse corriger
+    const hint = document.getElementById("hint_"+item.id);
+    hint.textContent = "Saisis la forme conjuguée correcte (présent).";
+  });
+};
+
+/* ====== reset (efface cumulé + journal) ====== */
+document.getElementById("resetAll").onclick = ()=>{
+  if(!confirm("Effacer le score cumulé et le journal TeleRap ?")) return;
+  localStorage.removeItem(LS_SCORE_CUMULE);
+  localStorage.removeItem(LS_TELERAP);
+  setCumule(0);
+  renderTeleRap();
+};
+
+/* ====== TeleRap (stockage & rendu) ====== */
+function readTele(){ try{ return JSON.parse(localStorage.getItem(LS_TELERAP)||"[]"); }catch{ return []; } }
+function writeTele(arr){ localStorage.setItem(LS_TELERAP, JSON.stringify(arr)); }
+
+function pushTeleRap(entry){
+  const arr = readTele();
+  arr.push(entry);
+  writeTele(arr);
+}
+
+function renderTeleRap(){
+  const arr = readTele();
+  const wrap = document.getElementById("teleWrap");
+  if(!arr.length){
+    wrap.innerHTML = '<p class="muted">Aucun enregistrement pour l’instant.</p>';
+    return;
+  }
+
+  // Tableau lisible
+  let html = "";
+  arr.slice().reverse().forEach((e,idx)=>{
+    html += `
+    <div class="card">
+      <div class="mini muted">#${arr.length-idx} – ${new Date(e.when).toLocaleString()}</div>
+      <div class="mini">Score essai : <span class="${e.score===e.total?'pill':'pill bad'}">${e.score}/${e.total}</span></div>
+      <table>
+        <thead><tr><th>#</th><th>Phrase</th><th>Saisi</th><th>Attendu</th><th>OK</th></tr></thead>
+        <tbody>
+          ${e.rows.map((r,i)=>`
+            <tr>
+              <td>${i+1}</td>
+              <td>${r.phrase}</td>
+              <td>${r.saisi === "" ? "<span class='muted'>∅</span>" : r.saisi}</td>
+              <td><b>${r.attendu}</b></td>
+              <td>${r.ok ? "✅" : "❌"}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>`;
+  });
+  wrap.innerHTML = html;
+}
+
+renderTeleRap();
+
+/* ====== Raccourci bouton TeleRap ====== */
+document.getElementById("teleRapBtn").onclick = ()=>{
+  document.getElementById("telePanel").open = true;
+  document.getElementById("telePanel").scrollIntoView({behavior:"smooth", block:"start"});
+};
+</script>
+</body>
+</html>

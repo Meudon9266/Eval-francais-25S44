@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ExI — Cliquer les verbes à l’impératif présent</title>
+<style>
+  :root { --base-font: 20px; --ok:#27ae60; --ko:#c0392b; --hint:#3498db; }
+  html { font-size: var(--base-font); }
+  body { font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif; background:#f7f9fb; color:#1b1e23; margin:0; }
+  header { display:flex; align-items:center; gap:.5rem; padding:12px 16px; background:#eaf2ff; border-bottom:1px solid #dde6f7; }
+  header h1 { font-size:1.05rem; margin:0; font-weight:700; color:#2b4c9c; }
+  .toolbar { margin-left:auto; display:flex; gap:.4rem; align-items:center; }
+  .btn { cursor:pointer; border:1px solid #cfd7e6; background:#fff; padding:.25rem .55rem; border-radius:10px; font-weight:600; box-shadow:0 1px 0 rgba(0,0,0,.03);}
+  .btn:hover{ background:#f5f8ff }
+  .btn.small{ font-size:.9rem; padding:.2rem .45rem }
+  .btn.reset{ opacity:.6 }
+  .wrap { max-width:1000px; margin:18px auto 80px; padding:0 16px; }
+  .consigne{ display:flex; align-items:center; gap:.5rem; color:#2b4c9c; font-weight:700; margin-bottom:8px;}
+  .carte { background:#fff; border:1px solid #e7ebf3; border-radius:14px; padding:18px; margin:12px 0; box-shadow:0 6px 16px rgba(0,0,0,.04);}
+  .ligne { line-height:2.1; user-select:none; }
+  .num { color:#6b7280; margin-right:.6rem; }
+  .w { display:inline-block; padding:0 .18rem; border-radius:6px; transition:background .15s, box-shadow .15s; }
+  .w.selectable { cursor:pointer; }
+  .w.selectable:hover { background:#f0f4ff; }
+  .w.sel { background:#fff3d1; box-shadow:inset 0 0 0 2px #ffe08a; }
+  .w.ok  { box-shadow:inset 0 -3px 0 var(--ok); }
+  .w.miss{ box-shadow:inset 0 -3px 0 var(--hint); }
+  .w.bad { background:#ffe6e6; box-shadow:inset 0 -3px 0 var(--ko); }
+  .actions { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:14px;}
+  .score { font-weight:700; }
+  .global { position:sticky; bottom:0; background:#fbfcff; border-top:1px solid #e7ebf3; padding:12px 16px; display:flex; gap:.6rem; align-items:center; justify-content:space-between;}
+  .legend { font-size:.85rem; color:#6b7280;}
+  .legend b{ color:#1b1e23; }
+  .pill { background:#eef3ff; border:1px solid #dbe6ff; padding:.2rem .5rem; border-radius:999px; font-size:.9rem; }
+  .note { color:#6b7280; font-size:.9rem; }
+  a.home { text-decoration:none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Cliquer les verbes conjugués à l’impératif présent</h1>
+  <div class="toolbar">
+    <a class="btn small home" href="index.html" title="Accueil">Accueil</a>
+    <button class="btn small" id="zoomPlus" title="Augmenter la police">A+</button>
+    <button class="btn small" id="zoomMoins" title="Réduire la police">A-</button>
+    <button class="btn small reset" id="resetCumule" title="Réinitialiser le score cumulé (reset)">reset</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="consigne">👉 Clique sur tous les <u>verbes à l’impératif</u> dans chaque phrase.</div>
+
+  <div id="exContainer"></div>
+
+  <div class="global">
+    <div class="legend">
+      <span class="pill">Sélection : jaune</span>
+      <span class="pill">Bon : trait <b>vert</b></span>
+      <span class="pill">Manqué : trait <b>bleu</b></span>
+      <span class="pill">Erreur : fond <b>rouge pâle</b></span>
+    </div>
+    <div class="actions">
+      <span class="score" id="scoreLive">Score : 0 / 10</span>
+      <button class="btn" id="btnVerifier">Vérifier</button>
+      <button class="btn" id="btnRecommencer">Réessayer</button>
+      <span class="note" id="cumuleInfo"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===========================
+   Données de l'exercice
+   =========================== */
+const PAGES_ID = "ExI_Imperatif_01";
+const LS_CUMULE = PAGES_ID + "_scoreCumule";
+const LS_TENT   = PAGES_ID + "_tentatives";
+
+const DATA = [
+  {tokens:["Je","vous","ordonne","de","vous","taire","."], correct:[]},
+  {tokens:["Prenez","place",",","s'il","vous","plaît","."], correct:[0]},
+  {tokens:["Éteignez","vos","portables",".","Leur","usage","est","interdit","."], correct:[0]},
+  {tokens:["On","va","partir",".","Sois","prêt","dans","cinq","minutes","."], correct:[4]},
+  {tokens:["Courage","!"], correct:[]},
+  {tokens:["«","Aux","armes",",","citoyens","!","Formez","vos","bataillons","!","Marchons",",","marchons","!","»"], correct:[6,10,12]},
+  {tokens:["Choisis","un","livre","."], correct:[0]},
+  {tokens:["J'attends","depuis","longtemps","."], correct:[]},
+  {tokens:["Attends","!"], correct:[0]},
+  {tokens:["Change","de","ton",",","tu","vas","filer","dans","ta","chambre","."], correct:[0]}
+];
+
+/* ===========================
+   Helpers & UI
+   =========================== */
+const $  = (s,ctx=document)=>ctx.querySelector(s);
+const $$ = (s,ctx=document)=>Array.from(ctx.querySelectorAll(s));
+const exContainer = $("#exContainer");
+
+function buildUI(){
+  exContainer.innerHTML = "";
+  DATA.forEach((row, i) => {
+    const card = document.createElement("div");
+    card.className = "carte";
+    const line = document.createElement("div");
+    line.className = "ligne";
+    line.dataset.index = i;
+
+    const num = document.createElement("span");
+    num.className = "num";
+    num.textContent = (i+1) + ".";
+    line.appendChild(num);
+
+    row.tokens.forEach((tok, j) => {
+      const w = document.createElement("span");
+      const isWord = /\p{L}|\d/iu.test(tok);
+      w.className = "w" + (isWord ? " selectable" : "");
+      w.textContent = tok;
+      w.dataset.i = i;
+      w.dataset.j = j;
+      if(isWord){
+        w.addEventListener("click", () => w.classList.toggle("sel"));
+      }
+      line.appendChild(w);
+      line.appendChild(document.createTextNode(" "));
+    });
+
+    card.appendChild(line);
+    exContainer.appendChild(card);
+  });
+}
+buildUI();
+
+function getSelections(){
+  const selected = {};
+  $$(".w.sel").forEach(w=>{
+    const i = +w.dataset.i, j = +w.dataset.j;
+    (selected[i] ??= new Set()).add(j);
+  });
+  return selected;
+}
+function arraysEqualAsSets(a, b){
+  if(a.size !== b.size) return false;
+  for(const v of a) if(!b.has(v)) return false;
+  return true;
+}
+function cleanFeedback(){
+  $$(".w").forEach(w => w.classList.remove("ok","bad","miss"));
+}
+function evaluate(showFeedback=true){
+  cleanFeedback();
+  const selections = getSelections();
+  let goodSentences = 0;
+
+  DATA.forEach((row, i) =>{
+    const need = new Set(row.correct);
+    const got  = selections[i] ?? new Set();
+
+    const ok = arraysEqualAsSets(got, need);
+    if(ok) goodSentences++;
+
+    if(showFeedback){
+      got.forEach(j=>{
+        const el = $(`.w[data-i="${i}"][data-j="${j}"]`);
+        if(need.has(j)) el.classList.add("ok");
+        else el.classList.add("bad");
+      });
+      need.forEach(j=>{
+        if(!got.has(j)){
+          const el = $(`.w[data-i="${i}"][data-j="${j}"]`);
+          el.classList.add("miss");
+        }
+      });
+    }
+  });
+
+  $("#scoreLive").textContent = `Score : ${goodSentences} / ${DATA.length}`;
+  return { good: goodSentences, total: DATA.length, selections };
+}
+
+/* ===========================
+   TéléRap — auto au clic Vérifier
+   =========================== */
+function makeTeleRap(trace){
+  const now = new Date();
+  const pad = n => String(n).padStart(2,"0");
+  const stamp = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+  let html = `
+  <meta charset="utf-8">
+  <title>TeleRap — Impératif</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif; background:#fff; color:#1b1e23; margin:20px;}
+    h1{font-size:1.25rem}
+    .meta{color:#6b7280;margin-bottom:10px}
+    .b{font-weight:700}
+    .card{border:1px solid #e7ebf3;border-radius:12px;padding:12px;margin:10px 0}
+    .ok{color:#27ae60}.ko{color:#c0392b}
+    code{background:#f6f8fa;border:1px solid #e7ebf3;border-radius:6px;padding:0 .25rem}
+    ul{margin:.3rem 0 .3rem 1.2rem}
+  </style>
+  <h1>TeleRap — Verbes à l’impératif</h1>
+  <div class="meta">Horodatage : ${stamp} — Exercice : ${PAGES_ID}</div>
+  <div class="card"><span class="b">Score :</span> ${trace.good} / ${trace.total}</div>
+  `;
+
+  DATA.forEach((row, i)=>{
+    const needWords = row.correct.map(j=>row.tokens[j]).join(" · ") || "—";
+    const gotIdx = trace.selections[i] ? Array.from(trace.selections[i]) : [];
+    const gotWords = gotIdx.map(j=>row.tokens[j]).join(" · ") || "—";
+    const ok = arraysEqualAsSets(new Set(gotIdx), new Set(row.correct));
+    const phrase = row.tokens.join(" ").replace(/ \./g,".").replace(/ ,/g,",");
+    html += `
+      <div class="card">
+        <div><span class="b">${i+1}.</span> ${phrase}</div>
+        <ul>
+          <li>Correct attendu : <code>${needWords}</code></li>
+          <li>Sélection élève : <code>${gotWords}</code></li>
+        </ul>
+        <div>Résultat : <span class="${ok?'ok':'ko'}">${ok?'Exact':'Inexact'}</span></div>
+      </div>`;
+  });
+
+  const blob = new Blob([html], {type:"text/html;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "TeleRap-Imperatif.html";
+  document.body.appendChild(a);
+  a.click();
+  URL.revokeObjectURL(url);
+  a.remove();
+}
+
+/* ===========================
+   Contrôles & cumulé
+   =========================== */
+function updateCumuleInfo(){
+  const cum = Number(localStorage.getItem(LS_CUMULE) ?? 0);
+  const tent = Number(localStorage.getItem(LS_TENT) ?? 0);
+  $("#cumuleInfo").textContent = `Cumulé: ${cum} pts — Tentatives: ${tent}`;
+}
+
+$("#btnVerifier").addEventListener("click", ()=>{
+  const res = evaluate(true);
+  // maj cumulé
+  const cum = Number(localStorage.getItem(LS_CUMULE) ?? 0) + res.good;
+  const tent= Number(localStorage.getItem(LS_TENT) ?? 0) + 1;
+  localStorage.setItem(LS_CUMULE, cum);
+  localStorage.setItem(LS_TENT, tent);
+  updateCumuleInfo();
+
+  // TéléRap : téléchargement automatique (signature TéléRap)
+  makeTeleRap(res);
+});
+
+$("#btnRecommencer").addEventListener("click", ()=>{
+  cleanFeedback();
+  $$(".w.sel").forEach(w=>w.classList.remove("sel"));
+  $("#scoreLive").textContent = "Score : 0 / 10";
+});
+
+$("#resetCumule").addEventListener("click", ()=>{
+  localStorage.removeItem(LS_CUMULE);
+  localStorage.removeItem(LS_TENT);
+  updateCumuleInfo();
+  const b = $("#resetCumule"); b.textContent = "reset ✓"; setTimeout(()=>b.textContent="reset", 900);
+});
+
+/* A+ / A- */
+function changeFont(delta){
+  const cur = parseFloat(getComputedStyle(document.documentElement).fontSize);
+  const next = Math.max(14, Math.min(28, cur + delta));
+  document.documentElement.style.setProperty("--base-font", next + "px");
+}
+$("#zoomPlus").addEventListener("click", ()=>changeFont(2));
+$("#zoomMoins").addEventListener("click", ()=>changeFont(-2));
+
+updateCumuleInfo();
+</script>
+</body>
+</html>

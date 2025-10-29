@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ExI — Vb1 en -cer / -ger (présent)</title>
+<style>
+  :root{
+    --fs:18px;
+    --w:920px;
+    /* largeur du <select> en ch, calculée par JS = max(len infinitif) + 5 */
+    --selch:14;
+  }
+  body{
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial,sans-serif;
+    line-height:1.5; font-size:var(--fs); margin:0; background:#f6f7fb; color:#222;
+  }
+  .wrap{ max-width:var(--w); margin:24px auto; padding:0 12px; }
+  header{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; justify-content:space-between; }
+  .title{ font-weight:700; font-size:1.15rem; }
+  .toolbar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  button, .btn{
+    cursor:pointer; border:1px solid #e3e6ef; background:#fff; padding:8px 12px; border-radius:10px;
+    box-shadow:0 2px 6px rgba(0,0,0,.06);
+  }
+  button:hover{ background:#f9fafc; }
+  .pill{ padding:6px 10px; border-radius:999px; background:#fff; border:1px solid #e6e9f3; }
+  .score{ font-weight:700; }
+
+  /* Pastel pour A+ / A− */
+  #btnAplus { background:#fdefff; border-color:#f2d9ff; }
+  #btnAplus:hover { background:#fae6ff; }
+  #btnAminus { background:#e9f7ff; border-color:#d3eefc; }
+  #btnAminus:hover { background:#def2ff; }
+
+  .card{
+    border:1px solid #e9ecef; border-radius:14px; box-shadow:0 6px 16px rgba(0,0,0,.04);
+    background:#fff; padding:16px; margin:14px 0;
+  }
+
+  /* Présentation des questions : phrase unique + aide en dessous */
+  .q{ margin:12px 0; }
+  .sent{ margin:0 0 4px 0; }
+  .muted{ color:#667085; }
+
+  /* Select dimensionné en ch, inline dans la phrase — ORANGE PASTEL */
+  select{
+    width: calc(var(--selch) * 1ch);
+    display:inline-block;
+    vertical-align:baseline;
+    padding:8px;
+    border:1px solid #ffd7b5; border-radius:10px;
+    background:#fff4e8;       /* orange pastel */
+  }
+  /* États de correction : priment sur le fond pastel */
+  select.ok{ outline:2px solid #3bb273; background:#f1fbf5; }
+  select.ko{ outline:2px solid #ef6b6b; background:#fff6f6; }
+
+  .nav{ display:flex; justify-content:space-between; gap:12px; margin-top:8px; }
+  .center{ text-align:center; }
+  .hidden{ display:none !important; }
+
+  /* Modals */
+  .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.25); display:none; align-items:center; justify-content:center; z-index:50; }
+  .modal{ background:#fff; width:min(720px, calc(100vw - 24px)); max-height:85vh; overflow:auto;
+          border-radius:16px; border:1px solid #e6e8ef; box-shadow:0 20px 60px rgba(0,0,0,.18); }
+  .modal header{ padding:14px 16px; border-bottom:1px solid #eef1f6; }
+  .modal .body{ padding:16px; }
+  .modal .foot{ padding:14px 16px; border-top:1px solid #eef1f6; display:flex; justify-content:flex-end; gap:8px; }
+
+  table{ width:100%; border-collapse:collapse; font-size:.95rem; }
+  th, td{ border-bottom:1px solid #eef1f6; padding:8px 10px; text-align:left; vertical-align:top; }
+  th{ background:#f7f8fc; position:sticky; top:0; z-index:1; }
+
+  @media (max-width:700px){ :root{ --w:100%; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">ExI — Vb1 en -cer / -ger (présent)</div>
+    <div class="toolbar">
+      <span class="pill">Page <span id="curPage">1</span>/4</span>
+      <span class="pill score">Score : <span id="scoreTotal">0</span> / <span id="scoreMax">16</span></span>
+      <button id="btnAplus" title="Augmenter la taille (A+)">A+</button>
+      <button id="btnAminus" title="Diminuer la taille (A-)">A−</button>
+      <a class="btn" href="index.html">Accueil</a>
+      <button id="btnReset" title="Réinitialiser le score et les réponses">Reset</button>
+      <button id="btnTeleRap" title="Rapport détaillé">TéléRap</button>
+    </div>
+  </header>
+
+  <div id="pageBox" class="card">
+    <div id="questions"></div>
+
+    <div class="nav">
+      <button id="btnPrev">← Page précédente</button>
+      <div class="center muted">Vérifie pour débloquer la question bonus de la page.</div>
+      <button id="btnNext">Page suivante →</button>
+    </div>
+
+    <div class="center" style="margin-top:10px;">
+      <button id="btnVerif" class="btn">Vérifier cette page</button>
+    </div>
+  </div>
+
+  <p class="muted">Toutes les réponses (bonnes ou mauvaises) sont enregistrées pour le rapport TéléRap.</p>
+</div>
+
+<!-- Modal BONUS -->
+<div id="modalBonus" class="modal-backdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="bonusTitle">
+    <header><div id="bonusTitle">Question bonus</div></header>
+    <div class="body">
+      <div id="bonusText" style="margin-bottom:8px;"></div>
+      <div id="bonusOptions"></div>
+      <div id="bonusFeedback" class="hidden"></div>
+    </div>
+    <div class="foot">
+      <button id="bonusCancel">Fermer</button>
+      <button id="bonusOk">Valider la bonus</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal TeleRap -->
+<div id="modalRap" class="modal-backdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rapTitle">
+    <header><div id="rapTitle">TéléRap — Rapport des réponses</div></header>
+    <div class="body">
+      <div style="margin-bottom:10px; display:flex; gap:8px; align-items:center;">
+        <button id="btnCsv">Télécharger CSV</button>
+        <span class="muted">Inclut toutes les pages, toutes les réponses.</span>
+      </div>
+      <div style="max-height:55vh; overflow:auto;">
+        <table id="rapTable">
+          <thead>
+            <tr>
+              <th>#</th><th>Page</th><th>Énoncé</th><th>Réponse</th><th>Attendu</th><th>Correct ?</th>
+            </tr>
+          </thead>
+          <tbody id="rapTbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="foot">
+      <button id="rapClose">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ========= Données =========
+   16 items répartis sur 4 pages (4 par page)
+   Chaque item : { id, page, inf, before, after, options:[ "...", "forme* (bonne)", ... ] }
+*/
+const DATA = [
+  {id:1,  page:1, inf:"commencer",   before:"Nous ", after:" une nouvelle année.", options:["– choix –","commençons*","commencons","commenceons"]},
+  {id:2,  page:1, inf:"avancer",     before:"Nous ", after:" notre départ de quelques minutes.", options:["– choix –","avançons*","avancons","avanceons"]},
+  {id:3,  page:1, inf:"négliger",    before:"Le jeune homme sans éducation ", after:" ses devoirs.", options:["– choix –","néglige*","négligent","négligée"]},
+  {id:4,  page:1, inf:"charger",     before:"Le ciel se ", after:" de sombres nuages.", options:["– choix –","charge*","chargent","chargée"]},
+
+  {id:5,  page:2, inf:"s'efforcer",  before:"Nous nous ", after:" de suivre les conseils de nos parents.", options:["– choix –","efforçons*","efforcons","efforceons"]},
+  {id:6,  page:2, inf:"ranger",      before:"Vous ", after:" vos affaires.", options:["– choix –","rangez*","rangéez","ranger"]},
+  {id:7,  page:2, inf:"recommencer", before:"Après un échec, l’élève ", after:" son devoir.", options:["– choix –","recommence*","recommençe","recommencent"]},
+  {id:8,  page:2, inf:"rincer",      before:"Il lave les verres puis les ", after:" à l’eau chaude rapidement.", options:["– choix –","rince*","rinçe","rincent"]},
+
+  {id:9,  page:3, inf:"obliger",     before:"Vous ", after:" toujours vos camarades à choisir votre jeu.", options:["– choix –","obligez*","obligeez","obliger"]},
+  {id:10, page:3, inf:"soulager",    before:"Le docteur lui a donné des antibiotiques, cela le ", after:".", options:["– choix –","soulage*","soulages","soulagent"]},
+  {id:11, page:3, inf:"recommencer", before:"Nous ", after:" l’exercice que nous n’avions pas su faire.", options:["– choix –","recommençons*","recommencons","recommenceons"]},
+  {id:12, page:3, inf:"se déplacer", before:"Pour les vacances, nous nous ", after:" en avion.", options:["– choix –","déplaçons*","deplacons","déplaceons"]},
+
+  {id:13, page:4, inf:"agacer",      before:"Les aboiements de ce chien nous ", after:".", options:["– choix –","agacent*","agaçent","agace"]},
+  {id:14, page:4, inf:"lancer",      before:"Vous ", after:" la balle bien trop fort.", options:["– choix –","lancez*","lancés","lançons"]},
+  {id:15, page:4, inf:"sucer",       before:"Nous ", after:" toujours notre pouce.", options:["– choix –","suçons*","sucons","suceons"]},
+  {id:16, page:4, inf:"déplacer",    before:"On ", after:" nos meubles pour gagner de la place.", options:["– choix –","déplace*","deplacent","déplaçe"]},
+];
+
+// Marquer la bonne réponse via * et dédupliquer proprement
+const ITEMS = DATA.map(q=>{
+  const opts = [];
+  const seen = new Set();
+  let correct = null;
+  q.options.forEach(o=>{
+    let lab = o, ok = false;
+    if (o.endsWith("*")) { lab = o.slice(0,-1); ok = true; }
+    if (!seen.has(lab)) { seen.add(lab); opts.push({label:lab, correct:ok}); if(ok) correct = lab; }
+  });
+  return { ...q, options: opts, correct };
+});
+
+/* ===== BONUS fusionné =====
+   Quiz à choix unique, réponse correcte marquée par * (puis transformée en index)
+*/
+const BONUS = {
+  1: {
+    enabled: true,
+    question: "Avec « nous », les verbes en -cer prennent…",
+    options: ["-cons", "-çons*", "-sons"]
+  },
+  2: {
+    enabled: true,
+    question: "Règle -ger : quelle forme est correcte avec « nous » ?",
+    options: ["mangeons*", "mangons", "mangeaons"]
+  },
+  3: {
+    enabled: true,
+    question: "La cédille (ç) s’emploie-t-elle devant « e / i / y » ?",
+    options: ["Non, inutile : ces voyelles adoucissent déjà le c*", "Oui, toujours", "Seulement devant i"]
+  },
+  4: {
+    enabled: true,
+    question: "Complète correctement : « nous lancer » → …",
+    options: ["lancons", "lançons*", "lancions"]
+  }
+};
+// marquage de la bonne réponse (finissant par *) → index numérique
+Object.keys(BONUS).forEach(p=>{
+  const b = BONUS[p]; if(!b?.options) return;
+  let idx=null;
+  b.options = b.options.map((l,i)=>{
+    if(l.endsWith("*")) { idx=i; l=l.slice(0,-1); }
+    return l;
+  });
+  b.correctIndex = (idx!==null)? idx : null;
+});
+
+const PER_PAGE = 4;
+const PAGES = 4;
+const LS_KEY = "exi_vb1_cer_ger_v3";
+const LS_RAP = "exi_vb1_cer_ger_v3_rap";
+
+const $ = (s,ctx=document)=>ctx.querySelector(s);
+const $$ = (s,ctx=document)=>Array.from(ctx.querySelectorAll(s));
+
+// état
+let page = 1;
+let lockedPages = new Set(); // pages déjà vérifiées
+let bonusDone = {};          // {page:true}
+let scoreTotal = 0;
+
+// Charger état existant
+(function loadState(){
+  try{
+    const st = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+    if (st.page) page = st.page;
+    if (st.lockedPages) lockedPages = new Set(st.lockedPages);
+    if (st.bonusDone) bonusDone = st.bonusDone;
+    if (typeof st.scoreTotal === "number") scoreTotal = st.scoreTotal;
+  }catch(e){}
+})();
+
+function saveState(){
+  const st = { page, lockedPages:[...lockedPages], bonusDone, scoreTotal };
+  localStorage.setItem(LS_KEY, JSON.stringify(st));
+}
+
+function upScoreDisplay(){
+  $("#curPage").textContent = page;
+  $("#scoreTotal").textContent = scoreTotal;
+}
+
+/* === Calcule la largeur du select : max longueur infinitif + 5 ch === */
+function computeSelWidthCh(items){
+  let maxLen = 0;
+  items.forEach(q=>{
+    const raw = (q.inf || "").toString();
+    const cleaned = raw.replace(/[\s’']/g, ""); // retire espaces et apostrophes
+    maxLen = Math.max(maxLen, cleaned.length);
+  });
+  return Math.max(10, maxLen + 5); // minimum confortable
+}
+function applySelectWidth(items){
+  const ch = computeSelWidthCh(items);
+  document.documentElement.style.setProperty("--selch", ch);
+}
+
+function buildSelect(q){
+  const sel = document.createElement("select");
+  sel.dataset.qid = q.id;
+  q.options.forEach((o,idx)=>{
+    const opt = document.createElement("option");
+    opt.value = o.label;
+    opt.textContent = o.label;
+    if (idx===0 && o.label==="– choix –") { opt.disabled = true; opt.selected = true; }
+    sel.appendChild(opt);
+  });
+  if (lockedPages.has(page)) sel.disabled = true;
+  return sel;
+}
+
+function renderPage(){
+  const container = $("#questions");
+  container.innerHTML = "";
+  const items = ITEMS.filter(x=>x.page===page);
+
+  items.forEach(q=>{
+    const line = document.createElement("div");
+    line.className = "q";
+
+    // phrase unique avec select inline = alignée début/fin naturellement
+    const phr = document.createElement("p");
+    phr.className = "sent";
+    phr.append(document.createTextNode(q.before));
+    const sel = buildSelect(q);
+    phr.appendChild(sel);
+    phr.append(document.createTextNode(q.after));
+
+    const hint = document.createElement("div");
+    hint.className = "muted";
+    hint.textContent = "Choisir la forme au présent";
+
+    line.appendChild(phr);
+    line.appendChild(hint);
+    container.appendChild(line);
+
+    // si page verrouillée, colorer/figer
+    if (lockedPages.has(page)) {
+      if (sel.value===q.correct) sel.classList.add("ok");
+      else sel.classList.add("ko");
+      sel.disabled = true;
+    }
+  });
+
+  $("#btnPrev").disabled = (page===1);
+  $("#btnNext").disabled = (page===PAGES);
+  $("#btnVerif").disabled = lockedPages.has(page);
+  upScoreDisplay();
+}
+
+function logRap(rows){
+  const cur = JSON.parse(localStorage.getItem(LS_RAP) || "[]");
+  cur.push(...rows);
+  localStorage.setItem(LS_RAP, JSON.stringify(cur));
+}
+
+function verifyPage(){
+  const items = ITEMS.filter(x=>x.page===page);
+  let rows = [];
+  let gained = 0;
+
+  items.forEach(q=>{
+    const sel = $$("select", $("#questions")).find(s => +s.dataset.qid===q.id);
+    const val = sel ? sel.value : "–";
+    const isOk = (val === q.correct);
+    if (sel){
+      sel.classList.remove("ok","ko");
+      sel.classList.add(isOk ? "ok" : "ko");
+      sel.disabled = true;
+    }
+    if (isOk) gained += 1;
+
+    rows.push({
+      id:q.id,
+      page:q.page,
+      enonce: (q.before+" ___ "+q.after).trim(),
+      chosen: val,
+      correct: q.correct,
+      isOk
+    });
+  });
+
+  scoreTotal += gained;
+  lockedPages.add(page);
+  saveState();
+  upScoreDisplay();
+  logRap(rows);
+
+  openBonus(page);
+  $("#btnVerif").disabled = true;
+}
+
+function openBonus(p){
+  const cfg = BONUS[p];
+  if (!cfg || !cfg.enabled || bonusDone[p]) return;
+  const mb = $("#modalBonus");
+  const t = $("#bonusTitle");
+  const txt = $("#bonusText");
+  const zone = $("#bonusOptions");
+  const fb = $("#bonusFeedback");
+
+  t.textContent = "Question bonus — Page "+p;
+  txt.textContent = cfg.question || "(Bonus à définir)";
+  zone.innerHTML = "";
+  (cfg.options||["(à définir)"]).forEach((lab,i)=>{
+    const id = "bopt_"+p+"_"+i;
+    const line = document.createElement("div");
+    line.style.margin = "6px 0";
+    line.innerHTML = `<label><input type="radio" name="bonusP${p}" value="${i}" /> ${lab}</label>`;
+    zone.appendChild(line);
+  });
+  fb.classList.add("hidden"); fb.textContent = "";
+  mb.style.display = "flex";
+
+  $("#bonusCancel").onclick = ()=>{ mb.style.display="none"; };
+  $("#bonusOk").onclick = ()=>{
+    const sel = $(`input[name="bonusP${p}"]:checked`, zone);
+    if(!sel){ fb.textContent = "Choisis une option."; fb.classList.remove("hidden"); return; }
+    const idx = +sel.value;
+    const hasAnswer = (cfg.correctIndex!==null && cfg.correctIndex!==undefined);
+    let ok = false;
+    if (hasAnswer){ ok = (idx===cfg.correctIndex); }
+    if (ok){ scoreTotal += 1; upScoreDisplay(); saveState(); }
+
+    const row = {
+      id:`B${p}`,
+      page:p,
+      enonce:`[BONUS] ${cfg.question}`,
+      chosen: cfg.options[idx],
+      correct: hasAnswer ? cfg.options[cfg.correctIndex] : "(à définir)",
+      isOk: hasAnswer ? ok : null
+    };
+    logRap([row]);
+
+    bonusDone[p] = true; saveState();
+    mb.style.display = "none";
+  };
+}
+
+function nextPage(){ if(page<PAGES){ page++; saveState(); renderPage(); } }
+function prevPage(){ if(page>1){ page--; saveState(); renderPage(); } }
+
+$("#btnAplus").onclick = ()=>{
+  const fs = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--fs"));
+  document.documentElement.style.setProperty("--fs", (fs+1)+"px");
+};
+$("#btnAminus").onclick = ()=>{
+  const fs = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--fs"));
+  document.documentElement.style.setProperty("--fs", Math.max(12,fs-1)+"px");
+};
+
+// Reset complet
+$("#btnReset").onclick = ()=>{
+  if(!confirm("Réinitialiser le score et toutes les réponses ?")) return;
+  localStorage.removeItem(LS_KEY);
+  localStorage.removeItem(LS_RAP);
+  page = 1; lockedPages.clear(); bonusDone={}; scoreTotal = 0;
+  saveState(); renderPage();
+};
+
+// TeleRap modal
+$("#btnTeleRap").onclick = ()=>{
+  const arr = JSON.parse(localStorage.getItem(LS_RAP) || "[]");
+  const tb = $("#rapTbody"); tb.innerHTML = "";
+  arr.forEach((r,idx)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${idx+1}</td><td>${r.page}</td><td>${escapeHtml(r.enonce)}</td>
+                    <td>${escapeHtml(r.chosen||"")}</td>
+                    <td>${escapeHtml(r.correct||"")}</td>
+                    <td>${r.isOk===null? "—" : (r.isOk? "✔️" : "❌")}</td>`;
+    tb.appendChild(tr);
+  });
+  $("#modalRap").style.display = "flex";
+};
+$("#rapClose").onclick = ()=>{ $("#modalRap").style.display = "none"; };
+
+// CSV export
+$("#btnCsv").onclick = ()=>{
+  const arr = JSON.parse(localStorage.getItem(LS_RAP) || "[]");
+  const rows = [["#", "page", "enonce", "reponse", "attendu", "correct"]];
+  arr.forEach((r,i)=> rows.push([i+1, r.page, r.enonce, r.chosen||"", r.correct||"", r.isOk===null?"":(r.isOk?"1":"0")]));
+  const csv = rows.map(rr=> rr.map(x=> `"${String(x).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "TeleRap_Vb1_cer_ger.csv";
+  document.body.appendChild(a); a.click(); a.remove();
+};
+
+// nav
+$("#btnNext").onclick = nextPage;
+$("#btnPrev").onclick = prevPage;
+// vérifier
+$("#btnVerif").onclick = verifyPage;
+
+// helpers
+function escapeHtml(s){
+  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+}
+
+// init
+document.addEventListener("DOMContentLoaded", ()=>{
+  $("#scoreMax").textContent = ITEMS.length;
+  upScoreDisplay();
+
+  // largeur du select = max(len infinitif) + 5
+  applySelectWidth(ITEMS);
+
+  renderPage();
+});
+</script>
+</body>
+</html>
