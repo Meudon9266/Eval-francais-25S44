@@ -1,13 +1,13 @@
 {
   "items": [
-    { "id": 1,  "ref": "exo1",  "link": "exo1.html",  "desc": "Impératif",              "stars": 1 },
-    { "id": 2,  "ref": "exo2",  "link": "exo2.html",  "desc": "Impératif",              "stars": 1 },
-    { "id": 3,  "ref": "exo3",  "link": "exo3.html",  "desc": "Impératif",              "stars": 1 },
-    { "id": 4, "ref": "exo4", "link": "exo4.html", "desc": "Imperatif",                      "stars": 1 },
+    { "id": 1,  "ref": "exo1",  "link": "exo1.html",  "desc": "Texte à transformer (présent → passé composé)",              "stars": 1 },
+    { "id": 2,  "ref": "exo2",  "link": "exo2.html",  "desc": "complète les terminaisons de ces verbes à l’impératif",              "stars": 1 },
+    { "id": 3,  "ref": "exo3",  "link": "exo3.html",  "desc": "Transform les phrases à l’impératif présent",              "stars": 1 },
+    { "id": 4, "ref": "exo4", "link": "exo4.html", "desc": "Impératif : être / avoir / dire / faire",                      "stars": 1 },
     { "id": 5, "ref": "exo5", "link": "exo5.html", "desc": "conjuguer les verbes Voir, devoir, vouloir, recevoir, savoir, pouvoir",                      "stars": 1 },
-    { "id": 6, "ref": "exo6", "link": "exo6.html", "desc": "Imperatif",                      "stars": 1 },
-    { "id": 7, "ref": "exo7", "link": "exo7.html", "desc": "Imperatif",                      "stars": 1 },
-    { "id": 8, "ref": "exo8", "link": "exo8.html", "desc": "Imperatif",                      "stars": 1 },
+    { "id": 6, "ref": "exo6", "link": "exo6.html", "desc": "Conjugaison au présent des verbes du 3e groupe",                      "stars": 1 },
+    { "id": 7, "ref": "exo7", "link": "exo7.html", "desc": "Conjugaison au présent des verbes en -cer et -ger",                      "stars": 1 },
+    { "id": 8, "ref": "exo8", "link": "exo8.html", "desc": "Cliquer les verbes conjugués à l’impératif présent",                      "stars": 1 },
     { "id": 9, "ref": "exo9", "link": "exo9.html", "desc": "Imperatif",                      "stars": 1 }
   ]
 }
