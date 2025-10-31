@@ -1,8 +1,8 @@
 {
   "items": [
     { "id": 1,  "ref": "Exo1",  "link": "exo1.html",  "desc": "Accord du participe passé & phrases emphatiques",             "stars": 1 },
-    { "id": 1,  "ref": "Exo2",  "link": "exo2.html",  "desc": "A voir",             "stars": 1 },
-    { "id": 1,  "ref": "Exo3",  "link": "Exo3.html?file=Exo3exo1.json",  "desc": "A voir",             "stars": 1 }
+    { "id": 1,  "ref": "Exo2",  "link": "exo2.html",  "desc": "Retrouve toutes les formes correspondant à un participe passé dans un texte",             "stars": 1 },
+    { "id": 1,  "ref": "Exo3",  "link": "Exo3.html?file=Exo3exo1.json",  "desc": "classe selon la terminaison du participe passé (-i / -t / -is)",             "stars": 1 }
                     
   ]
 }
