@@ -1,0 +1,23 @@
+{
+  "title": "Étape 3",
+  "mission": "Mission : classe selon la terminaison du participe passé (-i / -t / -is)",
+  "categories": [
+    { "key": "i",  "label": "Bonbon", "icon": "🍬" },
+    { "key": "t",  "label": "Boîte",  "icon": "📦" },
+    { "key": "is", "label": "Pavé",   "icon": "🧊" }
+  ],
+  "items": [
+    { "txt": "je nourris",              "pp": "i",  "note": "nourri" },
+    { "txt": "je conduis",              "pp": "t",  "note": "conduit" },
+    { "txt": "je traduis",              "pp": "t",  "note": "traduit" },
+    { "txt": "tu accomplis",            "pp": "i",  "note": "accompli" },
+    { "txt": "je réfléchis",            "pp": "i",  "note": "réfléchi" },
+    { "txt": "j'ai compris",            "pp": "is", "note": "compris" },
+    { "txt": "tu as appris",            "pp": "is", "note": "appris" },
+    { "txt": "il a repris",             "pp": "is", "note": "repris" },
+    { "txt": "nous avons dit",          "pp": "t",  "note": "dit" },
+    { "txt": "ils ont écrit",           "pp": "t",  "note": "écrit" },
+    { "txt": "elle a choisi",           "pp": "i",  "note": "choisi" },
+    { "txt": "nous avons bâti",         "pp": "i",  "note": "bâti" }
+  ]
+}

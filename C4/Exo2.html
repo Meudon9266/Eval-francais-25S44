@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ExI — Participes passés : avoir / être</title>
+<style>
+  :root{
+    --c-avoir:#3A86FF;   /* bleu (1er clic) */
+    --c-etre:#2ECC71;    /* vert (2e clic) */
+    --c-bg:#fafafa;
+    --c-text:#222;
+    --c-card:#fff;
+    --c-muted:#777;
+    --c-ok:#2e7d32;
+    --c-ko:#c62828;
+  }
+  html,body{margin:0;padding:0;background:var(--c-bg);color:var(--c-text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,sans-serif;line-height:1.5}
+  .wrap{max-width:980px;margin:auto;padding:24px}
+  .card{background:var(--c-card);box-shadow:0 2px 8px rgba(0,0,0,.06);border-radius:12px;padding:20px;margin-bottom:18px}
+  h1{font-size:clamp(20px,2.6vw,28px);margin:.2em 0 .6em}
+  .legend{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid #ddd;background:#fff}
+  .dot{width:14px;height:14px;border-radius:50%}
+  .dot.avoir{background:var(--c-avoir)}
+  .dot.etre{background:var(--c-etre)}
+  .sent{margin:.6em 0;font-size:clamp(16px,1.9vw,19px)}
+  .pp{padding:1px 4px;border-radius:6px;cursor:pointer;transition:.15s box-shadow,.15s background-color,.15s color}
+  .pp[data-state="avoir"]{background:rgba(58,134,255,.12);color:var(--c-avoir);box-shadow:0 0 0 2px var(--c-avoir) inset}
+  .pp[data-state="etre"]{background:rgba(46,204,113,.15);color:var(--c-etre);box-shadow:0 0 0 2px var(--c-etre) inset}
+  .pp:focus{outline:2px solid #0002}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  button{border:0;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:600}
+  .primary{background:#222;color:#fff}
+  .ghost{background:#eef1f5}
+  .muted{color:var(--c-muted);font-size:.95em}
+  .score{font-weight:700;margin-top:6px}
+  .result.ok{color:var(--c-ok)}
+  .result.ko{color:var(--c-ko)}
+  .tip{font-size:.95em;color:#444;margin:.3em 0 0}
+  details{margin-top:6px}
+  summary{cursor:pointer;color:#333}
+  .small{font-size:.95em;color:#444}
+  mark.key{background:#fff2;box-shadow:0 0 0 1px #ddd inset;border-radius:6px;padding:0 4px}
+  .pp{
+  padding:1px 4px;
+  border-radius:6px;
+  cursor:text; /* curseur d’insertion (caret) */
+  transition:.15s box-shadow,.15s background-color,.15s color;
+  }
+
+
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>Participes passés : choisis l’auxiliaire du passé composé</h1>
+    <div class="legend">
+      <span class="pill"><span class="dot avoir"></span> 1ᵉʳ clic = <b>Avoir</b></span>
+      <span class="pill"><span class="dot etre"></span> 2ᵉ clic = <b>Être</b></span>
+      <span class="pill muted">3ᵉ clic = neutre</span>
+    </div>
+    <p class="small">Clique uniquement sur les <mark class="key">participes passés</mark> (déjà repérés). Puis appuie sur <b>Valider</b>.</p>
+  </div>
+
+  <div id="exo" class="card">
+    <!-- 1 -->
+    <p class="sent">1. Un bruit étrange a <span class="pp" data-key="retenti">retenti</span> dans la ville <span class="pp" data-key="endormie">endormie</span>.</p>
+    <!-- 2 -->
+    <p class="sent">2. Les assiettes <span class="pp" data-key="brisees">brisées</span> n’ont pas été <span class="pp" data-key="recollees">recollées</span>.</p>
+    <!-- 3 -->
+    <p class="sent">3. <span class="pp" data-key="amusee">Amusée</span>, elle regardait les jeux d’un chaton facétieux.</p>
+    <!-- 4 -->
+    <p class="sent">4. Le temps <span class="pp" data-key="perdu">perdu</span> ne se rattrape jamais.</p>
+    <!-- 5 -->
+    <p class="sent">5. Ses devoirs <span class="pp" data-key="termines">terminés</span>, elle s’est <span class="pp" data-key="rendue">rendue</span> chez sa camarade préférée.</p>
+    <!-- 6 -->
+    <p class="sent">6. <span class="pp" data-key="emus">Émus</span>, nous écoutions l’allocution <span class="pp" data-key="prononcee">prononcée</span> pour le départ de nos amis.</p>
+    <!-- 7 -->
+    <p class="sent">7. Après des jeux de ballon <span class="pp" data-key="endiables">endiablés</span> sur la plage, il est <span class="pp" data-key="rentre">rentré</span> avec des vêtements <span class="pp" data-key="trempes">trempés</span>.</p>
+    <!-- 8 -->
+    <p class="sent">8. Les biscuits <span class="pp" data-key="distribues">distribués</span> ont été aussitôt <span class="pp" data-key="manges">mangés</span> par les enfants <span class="pp" data-key="affames">affamés</span>.</p>
+
+    <div class="toolbar">
+      <button class="primary" id="btnCheck">Valider</button>
+      <button class="ghost" id="btnReset">Réinitialiser</button>
+      <span id="score" class="score"></span>
+    </div>
+    <div class="tip muted">Astuce : si tu hésites, laisse l’étiquette neutre et reviens plus tard.</div>
+    <details id="corr">
+      <summary>Voir la correction</summary>
+      <p class="small">Avoir : retenti, brisées, recollées, perdu, terminés, émus, prononcée, endiablés, trempés, distribués, mangés, affamés.<br>
+      Être : endormie (<i>s’endormir</i>), amusée (<i>s’amuser</i>), rendue (<i>se rendre</i>), rentré (<i>rentrer</i> intransitif de déplacement).</p>
+    </details>
+  </div>
+
+  <p class="muted">Consigne : « Clique une fois si le verbe prend <b>avoir</b> au passé composé, deux fois s’il prend <b>être</b>. »</p>
+</div>
+
+<script>
+/* Modèle de vérité : "avoir" ou "etre" selon l'auxiliaire NORMAL au passé composé */
+const AUX = {
+  retenti: "avoir",    // retentir
+  endormie: "etre",     // s'endormir
+  brisees: "avoir",     // briser
+  recollees: "avoir",   // recoller
+  amusee: "etre",       // s'amuser
+  perdu: "avoir",       // perdre
+  termines: "avoir",    // terminer
+  rendue: "etre",       // se rendre
+  emus: "avoir",        // émouvoir
+  prononcee: "avoir",   // prononcer
+  endiables: "avoir",   // endiabler
+  rentre: "etre",       // rentrer (ici intransitif)
+  trempes: "avoir",     // tremper
+  distribues: "avoir",  // distribuer
+  manges: "avoir",      // manger
+  affames: "avoir"      // affamer
+};
+
+// gestion des clics (neutre -> avoir -> être -> neutre)
+document.querySelectorAll('.pp').forEach(pp=>{
+  pp.setAttribute('data-state',''); // neutre
+  pp.addEventListener('click', ()=>{
+    const state = pp.getAttribute('data-state');
+    if(state===''){ pp.setAttribute('data-state','avoir'); }
+    else if(state==='avoir'){ pp.setAttribute('data-state','etre'); }
+    else { pp.setAttribute('data-state',''); }
+  });
+});
+
+// Validation + score
+const scoreEl = document.getElementById('score');
+document.getElementById('btnCheck').addEventListener('click', ()=>{
+  let total = 0, ok = 0;
+  document.querySelectorAll('.pp').forEach(pp=>{
+    const key = pp.dataset.key;
+    const expected = AUX[key];
+    const chosen = pp.getAttribute('data-state') || null;
+    if(expected){ total++; }
+    // marquage résultat
+    pp.classList.remove('result','ok','ko');
+    if(chosen){
+      if(chosen===expected){ ok++; pp.classList.add('result','ok'); }
+      else { pp.classList.add('result','ko'); }
+    }
+  });
+  scoreEl.textContent = `Score : ${ok} / ${total}`;
+});
+
+// Reset
+document.getElementById('btnReset').addEventListener('click', ()=>{
+  document.querySelectorAll('.pp').forEach(pp=>{
+    pp.setAttribute('data-state','');
+    pp.classList.remove('result','ok','ko');
+  });
+  scoreEl.textContent = '';
+  document.getElementById('corr').open = false;
+});
+</script>
+</body>
+</html>

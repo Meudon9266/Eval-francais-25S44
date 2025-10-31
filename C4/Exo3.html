@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Exo3 — Participe passé : i / t / is</title>
+<style>
+  :root{
+    --bg:#fff;--ink:#212529;--muted:#6c757d;--ok:#2e7d32;--ko:#c62828;
+    --pastel:#f7f9fc;--box:#f4efe9;--chip:#eef7ff;--line:#e9ecef;
+  }
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+       margin:0;background:var(--pastel);color:var(--ink)}
+  header{display:flex;align-items:center;justify-content:space-between;gap:.75rem;
+         padding:.75rem 1rem;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.06);position:sticky;top:0;z-index:2;flex-wrap:wrap}
+  .title{font-weight:700}
+  .controls{display:flex;align-items:center;flex-wrap:wrap;gap:.4rem}
+  .controls button{border:0;border-radius:12px;padding:.4rem .7rem;cursor:pointer;background:#f1f3f5}
+  .controls button:hover{filter:brightness(.97)}
+  select{padding:.25rem .5rem;border-radius:6px;border:1px solid #ccc}
+  .muted{color:var(--muted);font-size:.95rem}
+  main{max-width:1100px;margin:1rem auto;padding:0 1rem}
+  .consigne{background:#fff;border-radius:16px;padding:1rem;border:1px solid var(--line)}
+  .board{display:block;margin-top:1rem}
+  .deck,.zones{background:#fff;border-radius:16px;padding:1rem;border:1px solid var(--line)}
+  .deck{margin-bottom:1rem}
+  .section-title{font-weight:700;margin-bottom:.5rem}
+  .pile{display:flex;flex-wrap:wrap;gap:.5rem;min-height:64px}
+  .card{user-select:none;background:var(--chip);border:1px dashed #b6d4fe;border-radius:14px;
+        padding:.5rem .65rem;cursor:grab;font-weight:600}
+  .card:active{cursor:grabbing;transform:scale(.98)}
+  .zones-grid{display:grid;grid-template-columns:1fr;gap:1rem}
+  @media (min-width:780px){ .zones-grid{grid-template-columns:repeat(3,1fr);} }
+  .zone{background:var(--box);border:2px solid #e8dfd4;border-radius:16px;padding:.75rem;min-height:140px}
+  .zone .emoji{display:block;font-size:40px;line-height:1;margin:.2rem 0 .3rem;text-align:center}
+  .zone h4{text-align:center;margin:.25rem 0 .5rem 0;font-size:1rem}
+  .drop{display:flex;flex-wrap:wrap;gap:.5rem;min-height:64px;justify-content:center}
+  .score{margin-top:.75rem;font-weight:700;text-align:center}
+  .hint{font-size:.9rem;color:var(--muted)}
+  .ok{color:var(--ok)} .ko{color:var(--ko)}
+  .error{background:#fff3f3;border:1px solid #ffd5d5;color:#7a1f1f;border-radius:12px;padding:.75rem;margin:.75rem 0}
+  .fs-1{font-size:15px}.fs-2{font-size:17px}.fs-3{font-size:19px}
+</style>
+</head>
+<body class="fs-2">
+  <header>
+    <div class="title" id="hdrTitle">Étape 1</div>
+    <div class="muted" id="hdrMission">Mission : classe selon la terminaison du participe passé (-i / -t / -is)</div>
+    <div class="controls">
+      <label for="datasetSelect" class="muted" style="margin-right:.25rem">Exo :</label>
+      <select id="datasetSelect" aria-label="Choisir le fichier JSON">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+      <button id="btnMinus">A-</button>
+      <button id="btnPlus">A+</button>
+      <button id="btnReset">Reset</button>
+      <button id="btnCheck">Vérifier</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="consigne">
+      <strong>Consigne.</strong> Glisse chaque verbe dans la boîte 🍬 <strong>-i</strong>, 📦 <strong>-t</strong> ou 🧊 <strong>-is</strong>, selon la <em>terminaison de son participe passé</em>.
+      <div class="hint">Astuce : les formes du présent en <strong>-is</strong> ne veulent pas dire que le participe passé finit en -is (ex. <em>j’écris → écrit</em>).</div>
+      <div id="err" class="error" style="display:none"></div>
+    </div>
+
+    <div class="board">
+      <section class="deck">
+        <div class="section-title">Cartes à classer</div>
+        <div id="pile" class="pile" aria-live="polite"></div>
+      </section>
+
+      <section class="zones">
+        <div class="section-title">Boîtes de tri</div>
+        <div id="zones" class="zones-grid"></div>
+        <div class="score" id="score"></div>
+      </section>
+    </div>
+  </main>
+
+<script>
+/* =========================
+   Utilitaires
+   ========================= */
+const $  =(s,ctx=document)=>ctx.querySelector(s);
+const $$ =(s,ctx=document)=>Array.from(ctx.querySelectorAll(s));
+function el(tag, props={}, ...children){
+  const e=document.createElement(tag);
+  Object.entries(props).forEach(([k,v])=>{
+    if(k==='dataset') Object.assign(e.dataset,v);
+    else if(k==='class') e.className=v;
+    else if(k.startsWith('on')) e.addEventListener(k.slice(2),v);
+    else e.setAttribute(k,v);
+  });
+  children.forEach(c=>e.append(c));
+  return e;
+}
+
+/* =========================
+   État global
+   ========================= */
+let DATA=null; let dragData=null; let fsLevel=2;
+
+/* =========================
+   Rendu principal
+   ========================= */
+function renderAll(){
+  if(DATA.title)  $('#hdrTitle').textContent = DATA.title;
+  if(DATA.mission)$('#hdrMission').textContent = DATA.mission;
+  const pile=$('#pile'); pile.innerHTML='';
+  DATA.items.forEach((it,i)=>{
+    const card=el('div',{class:'card',draggable:'true',dataset:{pp:it.pp,idx:i,note:it.note||''},ondragstart:onDragStart},it.txt);
+    pile.append(card);
+  });
+  const zones=$('#zones'); zones.innerHTML='';
+  DATA.categories.forEach(cat=>{
+    const zone=el('div',{class:'zone',dataset:{pp:cat.key}});
+    zone.append(
+      el('span',{class:'emoji','aria-hidden':'true'},cat.icon||'⬜'),
+      el('h4',{},`${cat.label} (PP : -${cat.key})`),
+      el('div',{class:'drop','aria-label':`-${cat.key}`})
+    );
+    zones.append(zone);
+  });
+  $$('.zone').forEach(z=>{
+    z.addEventListener('dragover',e=>e.preventDefault());
+    z.addEventListener('drop',onDropToZone);
+  });
+  pile.addEventListener('dragover',e=>e.preventDefault());
+  pile.addEventListener('drop',e=>{e.preventDefault();if(dragData)pile.appendChild(dragData);});
+}
+
+/* =========================
+   Drag & Drop
+   ========================= */
+function onDragStart(e){dragData=e.target;}
+function onDropToZone(e){e.preventDefault();if(dragData)e.currentTarget.querySelector('.drop').appendChild(dragData);}
+
+/* =========================
+   Évaluation + TéléRap
+   ========================= */
+function evaluate(){
+  const total=DATA.items.length; let correct=0; const rows=[];
+  $$('.card').forEach(c=>c.style.outline='none');
+  $$('.zone').forEach(zone=>{
+    const expected=zone.dataset.pp;
+    zone.querySelectorAll('.card').forEach(card=>{
+      const idx=+card.dataset.idx; const item=DATA.items[idx];
+      const ok=item.pp===expected; if(ok)correct++;
+      rows.push({item:card.textContent,cible:`-${expected}`,attendu:`${item.note||''} → -${item.pp}`,resultat:ok?'OK':'Erreur'});
+      card.style.outline=ok?'2px solid var(--ok)':'2px solid var(--ko)';
+    });
+  });
+  $('#score').innerHTML=`Score : <span class="${(correct===total)?'ok':'ko'}">${correct} / ${total}</span>`;
+  autoDownloadTeleRap(rows,correct,total);
+}
+function autoDownloadTeleRap(rows,correct,total){
+  const now=new Date(),pad=n=>String(n).padStart(2,'0');
+  const stamp=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
+  const html=`<!doctype html><meta charset="utf-8"><title>Rapport Exo3</title>
+  <style>body{font-family:Segoe UI,Roboto,Arial,sans-serif;margin:24px}
+  h1{margin:0 0 8px}.muted{color:#6c757d}table{border-collapse:collapse;width:100%;margin-top:12px}
+  th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}.ok{color:#2e7d32;font-weight:700}.ko{color:#c62828;font-weight:700}</style>
+  <h1>Rapport — Participe passé (i / t / is)</h1>
+  <div class="muted">Généré le ${now.toLocaleString('fr-FR')}</div>
+  <p>Score : <strong>${correct} / ${total}</strong></p>
+  <table><thead><tr><th>Élément</th><th>Boîte</th><th>Attendu (PP)</th><th>Résultat</th></tr></thead>
+  <tbody>${rows.map(r=>`<tr><td>${r.item}</td><td>${r.cible}</td><td>${r.attendu}</td><td class="${r.resultat==='OK'?'ok':'ko'}">${r.resultat}</td></tr>`).join('')}</tbody></table>`;
+  const blob=new Blob([html],{type:'text/html'});const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=`TeleRap_Exo3_${stamp}.html`;
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);
+}
+
+/* =========================
+   Reset & A+A-
+   ========================= */
+function resetAll(){
+  $('#score').textContent='';
+  $$('.card').forEach(c=>c.style.outline='none');
+  const pile=$('#pile'); pile.innerHTML='';
+  DATA.items.forEach((_,i)=>{const c=$(`.card[data-idx="${i}"]`);if(c)pile.appendChild(c);});
+}
+$('#btnMinus').onclick=()=>{fsLevel=Math.max(1,fsLevel-1);document.body.className=`fs-${fsLevel}`;}
+$('#btnPlus').onclick=()=>{fsLevel=Math.min(3,fsLevel+1);document.body.className=`fs-${fsLevel}`;}
+$('#btnReset').onclick=resetAll;
+$('#btnCheck').onclick=evaluate;
+
+/* =========================
+   Sélecteur de dataset (Exo3exo1..5.json)
+   ========================= */
+const SELECTOR=document.getElementById('datasetSelect');
+const LS_KEY='Exo3_current_exo';
+function getURLExo(){const u=new URL(location.href);const v=u.searchParams.get('exo');const n=v?parseInt(v,10):null;return(n>=1&&n<=5)?n:null;}
+function getSavedExo(){const v=localStorage.getItem(LS_KEY);const n=v?parseInt(v,10):null;return(n>=1&&n<=5)?n:null;}
+function baseName(){return location.pathname.split('/').pop().replace('.html','');}
+function filenameFor(n){return `${baseName()}exo${n}.json`;}
+
+async function loadDataFor(n){
+  const file=filenameFor(n);
+  try{
+    $('#err')&&($('#err').style.display='none',$('#err').textContent='');
+    const res=await fetch(file,{cache:'no-store'});
+    if(!res.ok)throw new Error(`HTTP ${res.status} — ${res.statusText}`);
+    DATA=await res.json();renderAll();
+    localStorage.setItem(LS_KEY,String(n));
+    if(SELECTOR)SELECTOR.value=String(n);
+  }catch(err){
+    const msg=`Impossible de charger « ${file} ».\n${err.message}`;
+    if($('#err')){$('#err').style.display='block';$('#err').textContent=msg;}
+  }
+}
+if(SELECTOR){SELECTOR.addEventListener('change',e=>{const n=parseInt(e.target.value,10)||1;loadDataFor(n);});}
+(function init(){const n=getURLExo()??getSavedExo()??1;if(SELECTOR)SELECTOR.value=String(n);loadDataFor(n);})();
+</script>
+</body>
+</html>

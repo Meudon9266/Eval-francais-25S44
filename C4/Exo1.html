@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Exo 1 — Emphatique / Neutre + Accord du PP</title>
+<style>
+  :root{
+    --c-neutre:#6c757d;
+    --c-e1:#0d6efd;
+    --c-e2:#d63384;
+    --c-ok:#198754;
+    --c-ko:#dc3545;
+    --c-soft:#f8f9fa;
+  }
+  body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:#fff;margin:0}
+  header{padding:16px 20px;background:var(--c-soft);border-bottom:1px solid #e9ecef}
+  h1{font-size:18px;margin:0 0 6px}
+  .topbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  select,button{font-size:16px}
+  main{max-width:980px;margin:18px auto;padding:0 16px 40px}
+  .card{border:1px solid #e9ecef;border-radius:14px;box-shadow:0 6px 16px rgba(0,0,0,.04);background-color:#fff8f2;padding:18px 16px;margin-bottom:14px;transition:background-color .3s ease, box-shadow .3s ease;}
+  .card:hover{
+  background-color:#fff4ea; /* un ton à peine plus chaud */
+  box-shadow:0 8px 22px rgba(0,0,0,.08);
+  }
+  .meta{display:flex;justify-content:space-between;gap:10px;margin-top:10px;color:#6c757d;font-size:14px}
+  .question{font-size:22px;line-height:1.45;margin:8px 0 60px}
+  .pillbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 6px}
+  .pill{border:none;border-radius:999px;padding:8px 12px;color:#fff;cursor:pointer;opacity:.95}
+  .pill.neutre{background:var(--c-neutre)}
+  .pill.e1{background:var(--c-e1)}
+  .pill.e2{background:var(--c-e2)}
+  .pill[aria-pressed="true"]{outline:3px solid rgba(0,0,0,.1);opacity:1}
+  .ppWrap{display:inline-flex;align-items:baseline;gap:4px}
+  .ppBase{border-bottom:2px dotted #adb5bd;padding:0 2px}
+    .miniEnd{
+      font: inherit;         /* même police, graisse, taille que le texte autour */
+      line-height: 1;        /* évite la sur-hauteur par défaut des inputs */
+      padding: 0 2px;        /* pas de padding vertical qui décale la baseline */
+      vertical-align: baseline;
+      width:6.2ch;max-width:6.2ch;
+      border:none;border-bottom:1px solid #c8cbcd;
+      outline:none;text-align:center;font-size:1em;
+      background:transparent;caret-color:#111;
+    }
+    .miniEnd::placeholder{color:#ced4da}
+  /* ===== ALIGNEMENT À gauche DANS L'INPUT ===== */
+    .miniEnd{
+      text-align: left;   /* ← l’important pour toi */
+      font-variant-numeric: tabular-nums; /* plus stable visuellement, optionnel */
+    }
+    /* Alignement du placeholder à droite (selon navigateur) */
+    .miniEnd::placeholder{ text-align: left; }
+    .miniEnd::-webkit-input-placeholder{ text-align: left; }
+    .miniEnd:-ms-input-placeholder{ text-align: left; }
+
+  .btnRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .btn{border:none;border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer}
+  .btn.check{background:#111;color:#fff}
+  .btn.next{background:#f1f3f5}
+  .btn.reset{background:#ffe8e8}
+  .feedback{margin-top:10px;font-weight:600}
+  .ok{color:var(--c-ok)} .ko{color:var(--c-ko)}
+  .score{font-weight:700}
+  .hidden{display:none}
+  .legend{display:flex;gap:14px;align-items:center;color:#6c757d;font-size:14px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:14px;height:14px;border-radius:50%}
+  .dot.neutre{background:var(--c-neutre)} .dot.e1{background:var(--c-e1)} .dot.e2{background:var(--c-e2)}
+  .swapNote{font-size:14px;color:#555;margin-top:8px}
+  .banner{padding:6px 10px;border-radius:10px;margin-left:auto}
+  .banner.ok{background:#e9f7ef;color:#146c43}
+  .banner.warn{background:#fff3cd;color:#8a6d3b}
+  /* ===== VISIBILITÉ SÉLECTION DES BOUTONS ===== */
+.pill{
+  transition: background-color .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+
+/* état sélectionné (aria-pressed="true") : contour net + fond pastel */
+.pill[aria-pressed="true"]{
+  box-shadow: 0 0 0 3px rgba(0,0,0,.10), 0 0 0 6px rgba(0,0,0,.06);
+  transform: translateY(-1px);
+}
+
+/* Pastels par type quand sélectionné */
+.pill.neutre[aria-pressed="true"]{ background: #b7bfc6; }   /* gris pastel */
+.pill.e1[aria-pressed="true"]   { background: #9cc1ff; }   /* bleu pastel */
+.pill.e2[aria-pressed="true"]   { background: #f1a8cc; }   /* rose pastel */
+
+/* focus clavier bien visible */
+.pill:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 3px #111, 0 0 0 6px rgba(17,17,17,.25);
+}
+
+</style>
+</head>
+<body>
+<header>
+  <h1>Exercice 1 — Accord du participe passé &amp; phrases emphatiques</h1>
+  <div class="topbar">
+    <label for="dataSel">Fichier de série :</label>
+    <select id="dataSel" title="Choisir un fichier de série JS">
+      <option value="Exo1Serie1.js">Exo1Serie1.js</option>
+      <option value="Exo1Serie2.js">Exo1Serie2.js</option>
+      <option value="Exo1Serie3.js">Exo1Serie3.js</option>
+      <option value="Exo1Serie4.js">Exo1Serie4.js</option>
+      <option value="Exo2Serie2.js">Exo2Serie2.js</option>
+    </select>
+
+    <label for="serieSel">Série interne :</label>
+    <select id="serieSel"></select>
+
+    <span id="progress">Item <strong>1</strong>/6</span>
+    <span class="score">Score : <span id="score">0</span> / <span id="scoreMax">0</span></span>
+
+    <div id="loadBanner" class="banner warn">Aucun fichier chargé…</div>
+
+    <div class="legend">
+      <span><i class="dot neutre"></i> Neutre</span>
+      <span><i class="dot e1"></i> Emphatique « c’est … que »</span>
+      <span><i class="dot e2"></i> Emphatique apposition</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div id="question" class="question">Chargement…</div>
+
+    <div class="pillbar" role="group">
+      <button class="pill neutre" data-cat="N">Neutre</button>
+      <button class="pill e1" data-cat="E1">Emphatique par « c’est … que »</button>
+      <button class="pill e2" data-cat="E2">Emphatique par apposition</button>
+    </div>
+
+    <div class="btnRow">
+      <button id="btnCheck" class="btn check">Valider</button>
+      <button id="btnNext" class="btn next hidden">Suivant ⮕</button>
+      <button id="btnReset" class="btn reset hidden">Réessayer</button>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+    <div id="swapNote" class="swapNote hidden"></div>
+    <div class="meta">
+      <div id="explain"></div>
+      <div id="tip"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ===== 1) Chargement dynamique du fichier choisi ===== */
+const dataSel = document.getElementById('dataSel');
+let currentScript = null;
+
+function loadDataFile(filename){
+  if (currentScript){ currentScript.remove(); currentScript = null; }
+
+  const s = document.createElement("script");
+  s.src = filename + "?v=" + Date.now();
+  s.onload = () => {
+    // ⚠️ Si le fichier déclare 'const C2_DATA', on le recopie côté window
+    try { if (typeof C2_DATA !== 'undefined') { window.C2_DATA = C2_DATA; } } catch(e){}
+    setBanner("Fichier chargé : " + filename, true);
+    initAfterLoad();
+  };
+  s.onerror = () => {
+    setBanner("❌ Fichier introuvable : " + filename, false);
+    alert("❌ Fichier non trouvé : " + filename);
+  };
+  document.head.appendChild(s);
+  currentScript = s;
+}
+dataSel.addEventListener('change', ()=>loadDataFile(dataSel.value));
+
+/* ===== 2) UI : bannière de statut de chargement ===== */
+const loadBanner = document.getElementById('loadBanner');
+function setBanner(msg, ok){
+  loadBanner.textContent = msg;
+  loadBanner.className = "banner " + (ok ? "ok" : "warn");
+}
+
+/* ===== 3) Code principal de l'exercice ===== */
+const sel = document.getElementById('serieSel');
+const questionBox = document.getElementById('question');
+const feedback = document.getElementById('feedback');
+const explain = document.getElementById('explain');
+const tip = document.getElementById('tip');
+const swapNote = document.getElementById('swapNote');
+const pills = [...document.querySelectorAll('.pill')];
+const btnCheck = document.getElementById('btnCheck');
+const btnNext  = document.getElementById('btnNext');
+const btnReset = document.getElementById('btnReset');
+const progress = document.getElementById('progress');
+const scoreEl  = document.getElementById('score');
+const scoreMaxEl  = document.getElementById('scoreMax');
+
+let state = { serie:null, idx:0, score:0, scoreMax:0, chosenCat:null };
+
+/* Helper robuste : récupère les données quelle que soit la déclaration (const/var/window) */
+function getDATA(){
+  // Toujours préférer la dernière version posée sur window (écrasable)
+  if (window.C2_DATA) return window.C2_DATA;
+  // Sinon, repli sur un éventuel 'const' global lexical (premier fichier)
+  try { if (typeof C2_DATA !== 'undefined') return C2_DATA; } catch(e){}
+  return null;
+}
+
+function initAfterLoad(){
+  const DATA = getDATA();
+  if (!DATA || !DATA.series || !Object.keys(DATA.series).length){
+    alert("⚠️ Le fichier ne contient pas de séries valides.");
+    sel.innerHTML = "";
+    questionBox.textContent = "Aucune série disponible.";
+    return;
+  }
+  buildSerieMenu(DATA);
+  state.serie = parseInt(Object.keys(DATA.series)[0], 10);
+  sel.value = state.serie;
+  startSerie(state.serie);
+}
+
+function buildSerieMenu(DATA){
+  const series = Object.keys(DATA.series).map(n => parseInt(n,10)).sort((a,b)=>a-b);
+  sel.innerHTML = "";
+  series.forEach(i=>{
+    const o = document.createElement("option");
+    o.value = i;
+    o.textContent = "Série " + String(i).padStart(2,"0");
+    sel.appendChild(o);
+  });
+}
+
+function setPill(cat){
+  pills.forEach(p => p.setAttribute('aria-pressed', p.dataset.cat===cat ? 'true':'false'));
+  state.chosenCat = cat;
+}
+pills.forEach(p => p.addEventListener('click', () => setPill(p.dataset.cat)));
+sel.addEventListener('change', ()=> startSerie(parseInt(sel.value,10)));
+
+function buildPP(base){
+  return `<span class="ppWrap"><span class="ppBase">${base||'—'}</span>
+  <input id="ending" class="miniEnd" maxlength="6" placeholder="..." /></span>`;
+}
+function renderSentence(tpl, base){ return tpl.replace("{PP}", buildPP(base)); }
+
+function renderItem(){
+  const DATA = getDATA();
+  if (!DATA){ alert("⚠️ Données non chargées."); return; }
+  const it = DATA.series[state.serie][state.idx];
+  questionBox.innerHTML = renderSentence(it.template, it.verbBase);
+  feedback.textContent = ""; feedback.className = "feedback"; explain.textContent = "";
+  swapNote.classList.add("hidden"); swapNote.textContent = "";
+  tip.textContent = "Entre toute la terminaison (ex : e, es, ée, ites, rien...).";
+  setPill(null);
+  btnCheck.classList.remove("hidden"); btnNext.classList.add("hidden"); btnReset.classList.add("hidden");
+  progress.innerHTML = `Item <strong>${state.idx+1}</strong>/6`;
+  scoreEl.textContent = state.score; scoreMaxEl.textContent = state.scoreMax;
+}
+
+function labelFromType(t){
+  return t==='N' ? "Neutre" : (t==='E1' ? "Emphatique par « c’est … que »" : "Emphatique par apposition");
+}
+
+function checkAnswer(){
+  const DATA = getDATA();
+  if (!DATA){ alert("⚠️ Données non chargées."); return; }
+  const it = DATA.series[state.serie][state.idx];
+  const ending = (document.getElementById('ending')?.value || "").trim().toLowerCase();
+  const okCat = state.chosenCat === it.type;
+  const okEnd = ending === (it.expectedEnding || "");
+  const good = okCat && okEnd;
+
+  let got = 0; if (okCat) got++; if (okEnd) got++;
+  state.score += got; state.scoreMax += 2;
+
+  if (good){
+    feedback.textContent = "✅ Parfait !"; feedback.classList.add("ok");
+    if (it.altType && it.altTemplate){
+      questionBox.innerHTML = renderSentence(it.altTemplate, it.verbBase);
+      swapNote.classList.remove("hidden");
+      swapNote.textContent = `Transformation automatique : « ${labelFromType(it.type)} » → « ${labelFromType(it.altType)} ».`;
+    }
+  } else {
+    feedback.textContent = "❌ À corriger."; feedback.classList.add("ko");
+  }
+
+  const showPP = (it.verbBase||'') + (it.expectedEnding||'');
+  explain.innerHTML = `<strong>Solution :</strong> ${labelFromType(it.type)}, participe = <code>${showPP}</code>.<br>${it.rationale||""}`;
+
+  btnCheck.classList.add("hidden");
+  btnNext.classList.remove("hidden");
+  btnReset.classList.remove("hidden");
+
+  scoreEl.textContent = state.score; scoreMaxEl.textContent = state.scoreMax;
+}
+
+btnCheck.addEventListener("click", checkAnswer);
+
+btnNext.addEventListener("click", ()=>{
+  const DATA = getDATA();
+  if (!DATA){ alert("⚠️ Données non chargées."); return; }
+  const items = DATA.series[state.serie];
+  if (state.idx < items.length-1){ state.idx++; renderItem(); }
+  else {
+    feedback.innerHTML = `🎉 Série terminée. Score : <strong>${state.score}/${state.scoreMax}</strong>`;
+    btnNext.classList.add("hidden"); btnReset.classList.add("hidden");
+  }
+});
+btnReset.addEventListener("click", renderItem);
+
+function startSerie(n){
+  state = { ...state, serie:n, idx:0, score:0, scoreMax:0, chosenCat:null };
+  renderItem();
+}
+
+/* Charge par défaut le premier fichier du sélecteur */
+loadDataFile(dataSel.value);
+</script>
+</body>
+</html>
